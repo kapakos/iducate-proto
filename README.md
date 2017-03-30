@@ -1,6 +1,6 @@
-# lightweight-react-starter
+# iducate prototyping platform
 
-A lightweight starter with ES6, Webpack, React.
+A prototype platform with ES6, Webpack, React.
 
 ## Dev-Server
 
