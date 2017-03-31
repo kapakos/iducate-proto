@@ -13,7 +13,6 @@ export default class Hello extends Component {
       <div className="content">
         <h2>Iducate Prototypes</h2>
         <ul>
-          <li><Link to="/dashboard">Dashboard</Link></li>
           <li><Link to="/courses">Courses</Link></li>
         </ul>
         {this.props.children}

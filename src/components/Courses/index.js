@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import SelectField from 'material-ui/SelectField';
+import TextField from 'material-ui/TextField';
 import CourseList from 'components/CourseList';
 import MenuItem from 'material-ui/MenuItem';
 import partners from '../../data/partners';
@@ -18,14 +19,21 @@ class Courses extends Component {
       partners,
       courses,
       filteredCourses: null,
+      searchQuery: '',
     };
     this.handleChange = this.handleChange.bind(this);
+    this.filterCourses = this.filterCourses.bind(this);
   }
 
   handleChange(event, index, value) {
     this.setState({ value });
     const id = this.state.partners[value].id;
     this.setState({ filteredCourses: courses.filter(course => course.partnerId === id) });
+  }
+
+  filterCourses(event) {
+  	const filtered = courses.filter(course => course.title.includes(event.target.value));
+  	this.setState({ filteredCourses: filtered });
   }
 
   render() {
@@ -40,7 +48,11 @@ class Courses extends Component {
           <MenuItem value={null} primaryText="" />
           {this.state.partners.map((partner, index) => Courses.getMenuItem(partner.name, index))}
         </SelectField>
-        {this.state.filteredCourses && <CourseList courses={this.state.filteredCourses} />}
+        {this.state.filteredCourses &&
+        <div>
+          <TextField onChange={this.filterCourses} hintText="Start typing to filter for courses" floatingLabelText="Search Course" fullWidth />
+          <CourseList courses={this.state.filteredCourses} />
+        </div>}
       </div>
     );
   }

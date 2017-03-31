@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 7000;
 
 app.use(serve(`${__dirname}/dist`));
 
-app.use(Router.get('/', function* index() {
+app.use(Router.get(function* index() {
   yield send(this, `${__dirname}/dist/index.html`);
 }));
 

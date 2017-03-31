@@ -8,7 +8,6 @@ function getCard(card) {
     <Card style={{ marginBottom: '20px' }} key={card.id}>
       <CardHeader
         title={card.title}
-        subtitle="Subtitle"
         avatar={card.photoUrl}
       />
       {/* <CardMedia
@@ -16,7 +15,6 @@ function getCard(card) {
       >
         <img src={card.photoUrl} alt={card.title} />
       </CardMedia>*/}
-      <CardTitle title={card.title} subtitle="Card subtitle" />
       <CardText>
         {card.description}
       </CardText>
