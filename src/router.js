@@ -10,9 +10,10 @@ import CoursesPage from 'container/CoursesPage';
 const Routes = (
   <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
     <Router history={hashHistory}>
-      <Route path="/" component={Main} />
-      <Route path="dashboard" component={DashboardPage} />
-      <Route path="courses" component={CoursesPage} />
+      <Route path="/" component={Main}>
+        <Route path="dashboard" component={DashboardPage} />
+        <Route path="courses" component={CoursesPage} />
+      </Route>
     </Router>
   </MuiThemeProvider>
 );
