@@ -11,7 +11,6 @@
     "start": "node app.js",
     "dev": "NODE_ENV=development webpack-dev-server --port 7777 --devtool eval --progress --hide-modules --colors --hot --inline --content-base dist",
     "build": "NODE_ENV=production webpack --progress --hide-modules",
-    "heroku-postbuild": "npm run build",
     "test": "mocha --compilers js:babel-core/register --require ./test/setup.js './**/*Specs.js'",
     "test:watch": "npm test -- --watch"
   },
