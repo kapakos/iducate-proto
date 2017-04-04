@@ -4,8 +4,9 @@ import TextField from 'material-ui/TextField';
 import CourseList from 'components/CourseList';
 import MenuItem from 'material-ui/MenuItem';
 import partners from '../../data/partners';
-import courses from '../../data/courses';
+import dataService from '../../services/data';
 
+const courseList = dataService.getCourses();
 class Courses extends Component {
 
   static getMenuItem(text, value) {
@@ -17,7 +18,7 @@ class Courses extends Component {
     this.state = {
       value: null,
       partners,
-      courses,
+      courses: courseList,
       filteredCourses: null,
       searchQuery: '',
     };
@@ -26,14 +27,18 @@ class Courses extends Component {
   }
 
   handleChange(event, index, value) {
-    this.setState({ value });
-    const id = this.state.partners[value].id;
-    this.setState({ filteredCourses: courses.filter(course => course.partnerId === id) });
+    if (value != null) {
+      this.setState({ value });
+      const id = this.state.partners[value].id;
+      this.setState({ filteredCourses: courseList.filter(
+      course => course.partnerId === id) });
+    }
   }
 
   filterCourses(event) {
-  	const filtered = courses.filter(course => course.title.includes(event.target.value));
-  	this.setState({ filteredCourses: filtered });
+    const filtered = courseList.filter(
+      course => course.title.includes(event.target.value));
+    this.setState({ filteredCourses: filtered });
   }
 
   render() {
@@ -50,7 +55,11 @@ class Courses extends Component {
         </SelectField>
         {this.state.filteredCourses &&
         <div>
-          <TextField onChange={this.filterCourses} hintText="Start typing to filter for courses" floatingLabelText="Search Course" fullWidth />
+          <TextField
+            onChange={this.filterCourses}
+            hintText="Start typing to filter for courses"
+            floatingLabelText="Search Course" fullWidth
+          />
           <CourseList courses={this.state.filteredCourses} />
         </div>}
       </div>

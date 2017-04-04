@@ -3,16 +3,16 @@ import { Router, Route, hashHistory } from 'react-router';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
-import Hello from 'components/Hello';
-import Dashboard from 'components/Dashboard';
-import Courses from 'components/Courses';
+import Main from 'container/Main';
+import DashboardPage from 'container/DashboardPage';
+import CoursesPage from 'container/CoursesPage';
 
 const Routes = (
   <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
     <Router history={hashHistory}>
-      <Route path="/" component={Hello} />
-      <Route path="dashboard" component={Dashboard} />
-      <Route path="courses" component={Courses} />
+      <Route path="/" component={Main} />
+      <Route path="dashboard" component={DashboardPage} />
+      <Route path="courses" component={CoursesPage} />
     </Router>
   </MuiThemeProvider>
 );

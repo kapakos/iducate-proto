@@ -1,51 +1,70 @@
 import React from 'react';
-import { Card, CardActions, CardHeader, CardMedia, CardTitle, CardText } from 'material-ui/Card';
-import FlatButton from 'material-ui/FlatButton';
+import R from 'ramda';
+import Course, { CourseType } from 'components/course';
+import dataProvider from '../../data';
+
 import './courseList.css';
 
-function getCard(card) {
-  return (
-    <Card style={{ marginBottom: '20px' }} key={card.id}>
-      <CardHeader
-        title={card.title}
-        avatar={card.photoUrl}
+class CourseList extends React.Component {
+  static getCard(course, savedCourses, addCourse, removeCourse) {
+    return (
+      <Course
+        key={course.id}
+        course={course}
+        savedCourses={savedCourses}
+        saveHandler={addCourse}
+        removeHandler={removeCourse}
       />
-      {/* <CardMedia
-        overlay={<CardTitle title={card.title} subtitle="Overlay subtitle" />}
-      >
-        <img src={card.photoUrl} alt={card.title} />
-      </CardMedia>*/}
-      <CardText>
-        {card.description}
-      </CardText>
-      <CardActions>
-        <FlatButton label="Go to course page" />
-        <FlatButton label="Save to my courses" />
-      </CardActions>
-    </Card>
-  );
+    );
+  }
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      savedCourses: [],
+    };
+    this.addCourse = this.addCourse.bind(this);
+    this.removeCourse = this.removeCourse.bind(this);
+  }
+
+  componentWillMount() {
+    const self = this;
+    dataProvider.getCourses()
+    .then((courses) => {
+      self.setState({ savedCourses: courses });
+    });
+  }
+
+  addCourse(id) {
+    dataProvider.saveCourse(id);
+    const courses = this.state.savedCourses;
+    courses.push(id);
+    this.setState({ savedCourses: courses });
+  }
+
+  removeCourse(id) {
+    dataProvider.removeCourse(id);
+    const courses = this.state.savedCourses;
+    this.setState({ savedCourses: R.without([id], courses) });
+  }
+
+  render() {
+    return (
+      <div>
+        {this.props.courses && this.props.courses.map(course =>
+          CourseList.getCard(course, this.state.savedCourses, this.addCourse, this.removeCourse))}
+      </div>);
+  }
 }
 
-const CourseList = ({ courses }) => (
-  <div>
-    {courses && courses.map(course => getCard(course))}
-  </div>);
-
-export const coursePropType = React.PropTypes.arrayOf(React.PropTypes.shape({
-  title: React.PropTypes.string,
-  subtitle: React.PropTypes.string,
-  homepage: React.PropTypes.string,
-  summary: React.PropTypes.string,
-  short_summary: React.PropTypes.string,
-  key: React.PropTypes.string,
-}));
+export const CoursesPropType = React.PropTypes.arrayOf(React.PropTypes.shape(CourseType));
 
 CourseList.defaultProps = {
-  courses: {},
+  courses: [],
 };
 
 CourseList.propTypes = {
-  courses: coursePropType,
+  courses: CoursesPropType,
 };
 
 export default CourseList;

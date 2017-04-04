@@ -13,14 +13,12 @@ const getEnv = function () {
   return process.env.NODE_ENV;
 };
 
-const isDev = function () {
+const isDev = function isDev() {
   return getEnv() === 'development';
 };
 
 module.exports = {
-  entry: {
-    main: './src/main.js',
-  },
+  entry: ['babel-polyfill', './src/main.js'],
   output: {
     path: DIST_PATH,
     publicPath: '/',
@@ -43,6 +41,7 @@ module.exports = {
   resolve: {
     alias: {
       components: path.resolve(SRC_PATH, 'components'),
+      container: path.resolve(SRC_PATH, 'container'),
       colors: path.resolve(SRC_PATH, 'styles', 'config', 'colors.css'),
       images: path.resolve(SRC_PATH, 'images'),
     },
