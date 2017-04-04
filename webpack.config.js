@@ -9,6 +9,7 @@ const ROOT_PATH = path.resolve(__dirname);
 const SRC_PATH = path.resolve(ROOT_PATH, 'src');
 const DIST_PATH = path.resolve(ROOT_PATH, 'dist');
 
+const packageVersion = process.env.npm_package_version;
 const getEnv = function () {
   return process.env.NODE_ENV;
 };
@@ -16,13 +17,12 @@ const getEnv = function () {
 const isDev = function isDev() {
   return getEnv() === 'development';
 };
-
 module.exports = {
   entry: ['babel-polyfill', './src/main.js'],
   output: {
     path: DIST_PATH,
     publicPath: '/',
-    filename: 'bundle.js',
+    filename: `bundle${packageVersion}.js`,
   },
   module: {
     loaders: [
