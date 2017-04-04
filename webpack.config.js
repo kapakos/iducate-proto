@@ -4,6 +4,7 @@ const precss = require('precss');
 const autoprefixer = require('autoprefixer');
 const values = require('postcss-modules-values');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const ROOT_PATH = path.resolve(__dirname);
 const SRC_PATH = path.resolve(ROOT_PATH, 'src');
@@ -22,7 +23,7 @@ module.exports = {
   output: {
     path: DIST_PATH,
     publicPath: '/',
-    filename: `bundle${packageVersion}.js`,
+    filename: `bundle.${packageVersion}.js`,
   },
   module: {
     loaders: [
@@ -54,7 +55,11 @@ module.exports = {
     ];
   },
   plugins: [
-    new ExtractTextPlugin('styles.css'),
+    new ExtractTextPlugin(`styles.${packageVersion}.css`),
+    new HtmlWebpackPlugin({
+      title: 'Iducate Prototype',
+      template: 'views/index.ejs', // Load a custom template (ejs by default see the FAQ for details)
+    }),
   ],
 };
 
