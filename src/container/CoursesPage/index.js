@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
+import R from 'ramda';
 import SelectField from 'material-ui/SelectField';
-import TextField from 'material-ui/TextField';
+import AutoComplete from 'material-ui/AutoComplete';
 import CourseList from 'components/CourseList';
 import MenuItem from 'material-ui/MenuItem';
 import partners from '../../data/partners';
@@ -35,16 +36,15 @@ class Courses extends Component {
     }
   }
 
-  filterCourses(event) {
+  filterCourses(searchText) {
     const filtered = courseList.filter(
-      course => course.title.includes(event.target.value));
+      course => course.title.includes(searchText));
     this.setState({ filteredCourses: filtered });
   }
 
   render() {
     return (
       <div className="content">
-        <h2>Courses</h2>
         <SelectField
           floatingLabelText="Select Provider"
           value={this.state.value}
@@ -55,10 +55,14 @@ class Courses extends Component {
         </SelectField>
         {this.state.filteredCourses &&
         <div>
-          <TextField
-            onChange={this.filterCourses}
-            hintText="Start typing to filter for courses"
-            floatingLabelText="Search Course" fullWidth
+          <AutoComplete
+            style={{ marginBottom: '20px' }}
+            floatingLabelText="Search for course"
+            filter={AutoComplete.fuzzyFilter}
+            dataSource={R.pluck('title')(this.state.filteredCourses)}
+            maxSearchResults={5}
+            onUpdateInput={this.filterCourses}
+            fullWidth
           />
           <CourseList courses={this.state.filteredCourses} />
         </div>}

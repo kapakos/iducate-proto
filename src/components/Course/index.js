@@ -17,6 +17,8 @@ const Course = ({ course, saveHandler, removeHandler, savedCourses }) => {
       <CardActions>
         <RaisedButton
           primary
+          style={{ borderRadius: '0' }}
+          default
           onTouchTap={() => { saved ? removeHandler(course.id) : saveHandler(course.id); }}
           label={saved ? 'Remove from my Courses' : 'Save to my courses'}
           icon={saved && <ActionCheckCircle />}

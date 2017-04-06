@@ -1,14 +1,13 @@
 import React from 'react';
 import { Router, Route, hashHistory } from 'react-router';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import Main from 'container/Main';
 import DashboardPage from 'container/DashboardPage';
 import CoursesPage from 'container/CoursesPage';
+import muiTheme from './styles/muiTheme';
 
 const Routes = (
-  <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
+  <MuiThemeProvider muiTheme={muiTheme}>
     <Router history={hashHistory}>
       <Route path="/" component={Main}>
         <Route path="dashboard" component={DashboardPage} />
