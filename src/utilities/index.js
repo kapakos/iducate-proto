@@ -5,13 +5,11 @@ const isStorageAvailable = (type) => {
     storage.setItem(x, x);
     storage.removeItem(x);
     return true;
-    } catch (e) {
-      return false;
-    }
+  } catch (e) {
+    return false;
+  }
 };
 
-
-
 export default {
-  isStorageAvailable: isStorageAvailable
-}
+  isStorageAvailable,
+};

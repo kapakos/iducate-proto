@@ -1,32 +1,30 @@
 import React, { Component } from 'react';
 import { hashHistory } from 'react-router';
-import { Row, Col } from 'react-flexbox-grid';
-import AppBar from 'material-ui/AppBar';
-import { Tabs, Tab } from 'material-ui/Tabs';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-
-const styles = {
-  navigation: {
-    width: '20%',
-  },
-};
+import NavigationBar from 'components/NavigationBar';
+import R from 'ramda';
+import routes from '../../routes';
 
 class Main extends Component {
-  static handleActive(tab) {
-    hashHistory.push(`${tab.props['data-route']}`);
-  }
 
   constructor(props) {
     super(props);
     this.state = {
-      selectedTab: this.getActiveRoute(),
+      selectedTab: this.getSelectedTab(),
     };
     this.handleTitleTap = this.handleTitleTap.bind(this);
-    this.getActiveRoute = this.getActiveRoute.bind(this);
+    this.getSelectedTab = this.getSelectedTab.bind(this);
+    this.handleActive = this.handleActive.bind(this);
   }
 
-  getActiveRoute() {
-    return this.props.location.pathname.indexOf('course') > -1 ? 0 : -1;
+  getSelectedTab() {
+    const removeHomeRoute = route => route.name !== 'home';
+    return R.findIndex(R.propEq('path', this.props.location.pathname))(R.filter(removeHomeRoute, routes));
+  }
+
+  handleActive(tab) {
+    hashHistory.push(`${tab.props['data-route']}`);
+    this.setState({ selectedTab: tab.props.index });
   }
 
   handleTitleTap() {
@@ -37,24 +35,12 @@ class Main extends Component {
   render() {
     return (
       <div>
-        <Row>
-          <Col xs={12}>
-            <AppBar
-              style={{ boxShadow: 'none', pointer: 'Cursor' }}
-              showMenuIconButton={false}
-              title="Iducate Protoype"
-              onTitleTouchTap={this.handleTitleTap}
-            />
-          </Col>
-        </Row>
-        <Row style={{ backgroundColor: this.props.muiTheme.palette.primary1Color }}>
-          <Col xs={12}>
-            <Tabs style={styles.navigation} initialSelectedIndex={this.state.selectedTab}>
-              <Tab style={{ borderColor: 'yellow' }} label="Courses" data-route="/courses" onActive={Main.handleActive} />
-              <Tab label="Dashboard" data-route="/dashboard" onActive={Main.handleActive} />
-            </Tabs>
-          </Col>
-        </Row>
+        <NavigationBar
+          handleTitleTap={this.handleTitleTap}
+          handleActiveTab={this.handleActive}
+          background={this.props.muiTheme.palette.primary1Color}
+          selectedTab={this.state.selectedTab}
+        />
         {this.props.children}
       </div>
     );
