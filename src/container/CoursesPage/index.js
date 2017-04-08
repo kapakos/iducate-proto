@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import R from 'ramda';
+import { Grid, Row, Col } from 'react-flexbox-grid';
 import SelectField from 'material-ui/SelectField';
 import AutoComplete from 'material-ui/AutoComplete';
 import CourseList from 'components/CourseList';
@@ -44,29 +45,36 @@ class Courses extends Component {
 
   render() {
     return (
-      <div className="content">
-        <SelectField
-          floatingLabelText="Select Provider"
-          value={this.state.value}
-          onChange={this.handleChange}
-        >
-          <MenuItem value={null} primaryText="" />
-          {this.state.partners.map((partner, index) => Courses.getMenuItem(partner.name, index))}
-        </SelectField>
+      <Grid fluid>
+        <Row>
+          <Col xs={12}>
+            <SelectField
+              floatingLabelText="Select Provider"
+              value={this.state.value}
+              onChange={this.handleChange}
+            >
+              <MenuItem value={null} primaryText="" />
+              {this.state.partners.map((partner, index) =>
+                Courses.getMenuItem(partner.name, index))}
+            </SelectField>
+          </Col>
+        </Row>
         {this.state.filteredCourses &&
-        <div>
-          <AutoComplete
-            style={{ marginBottom: '20px' }}
-            floatingLabelText="Search for course"
-            filter={AutoComplete.fuzzyFilter}
-            dataSource={R.pluck('title')(this.state.filteredCourses)}
-            maxSearchResults={5}
-            onUpdateInput={this.filterCourses}
-            fullWidth
-          />
+        <Row>
+          <Col xs={12}>
+            <AutoComplete
+              style={{ marginBottom: '20px' }}
+              floatingLabelText="Search for course"
+              filter={AutoComplete.fuzzyFilter}
+              dataSource={R.pluck('title')(this.state.filteredCourses)}
+              maxSearchResults={5}
+              onUpdateInput={this.filterCourses}
+              fullWidth
+            />
+          </Col>
           <CourseList courses={this.state.filteredCourses} />
-        </div>}
-      </div>
+        </Row>}
+      </Grid>
     );
   }
 }

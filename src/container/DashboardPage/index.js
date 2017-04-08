@@ -1,10 +1,18 @@
 import React, { Component } from 'react';
-import style from './style.css';
+import { Grid, Row, Col } from 'react-flexbox-grid';
 
 class Dashboard extends Component {
-	render() {
-		return(<div className='content'>Dashboard</div>);
-	}
+
+  render() {
+    return (
+      <Grid fluid>
+        <Row>
+          <Col xs={12}>
+            <div>Dashboard</div>
+          </Col>
+        </Row>
+      </Grid>);
+  }
 }
 
 export default Dashboard;
