@@ -5,10 +5,11 @@ import SelectField from 'material-ui/SelectField';
 import AutoComplete from 'material-ui/AutoComplete';
 import CourseList from 'components/CourseList';
 import MenuItem from 'material-ui/MenuItem';
-import partners from '../../data/partners';
 import dataService from '../../services/data';
 
 const courseList = dataService.getCourses();
+const partners = dataService.getPartners();
+
 class Courses extends Component {
 
   static getMenuItem(text, value) {
@@ -18,29 +19,37 @@ class Courses extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: null,
+      value: 0,
       partners,
-      courses: courseList,
-      filteredCourses: null,
+      filteredCourses: courseList,
       searchQuery: '',
     };
     this.handleChange = this.handleChange.bind(this);
+    this.showCourses = this.showCourses.bind(this);
     this.filterCourses = this.filterCourses.bind(this);
+  }
+
+  filterCourses(searchText) {
+    const filtered = searchText === 'all'
+    ? courseList.filter(
+      course => course.title.includes(searchText))
+    : courseList;
+    this.setState({ filteredCourses: filtered });
+  }
+
+  showCourses(id) {
+    this.setState({ filteredCourses: id === 'all'
+        ? courseList
+        : courseList.filter(
+      course => course.partnerId === id) });
   }
 
   handleChange(event, index, value) {
     if (value != null) {
       this.setState({ value });
       const id = this.state.partners[value].id;
-      this.setState({ filteredCourses: courseList.filter(
-      course => course.partnerId === id) });
+      this.showCourses(id);
     }
-  }
-
-  filterCourses(searchText) {
-    const filtered = courseList.filter(
-      course => course.title.includes(searchText));
-    this.setState({ filteredCourses: filtered });
   }
 
   render() {
@@ -53,7 +62,6 @@ class Courses extends Component {
               value={this.state.value}
               onChange={this.handleChange}
             >
-              <MenuItem value={null} primaryText="" />
               {this.state.partners.map((partner, index) =>
                 Courses.getMenuItem(partner.name, index))}
             </SelectField>

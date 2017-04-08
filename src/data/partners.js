@@ -1,5 +1,9 @@
 const partners = [
   {
+    name: 'All',
+    id: 'all',
+  },
+  {
     name: 'Coursera',
     id: 'coursera',
   },

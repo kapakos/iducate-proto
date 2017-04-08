@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Grid, Row, Col } from 'react-flexbox-grid';
 
 class Dashboard extends Component {
-
   render() {
     return (
       <Grid fluid>
