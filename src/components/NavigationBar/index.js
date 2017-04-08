@@ -1,11 +1,11 @@
 import React from 'react';
-import { Row, Col } from 'react-flexbox-grid';
+import { Grid, Row, Col } from 'react-flexbox-grid';
 import AppBar from 'material-ui/AppBar';
 import { Tabs, Tab } from 'material-ui/Tabs';
 
 const styles = {
   navigation: {
-    width: '20%',
+    width: '250px',
   },
 };
 
@@ -14,18 +14,18 @@ const NavigationBar = ({
   handleActiveTab,
   background,
   selectedTab }) => (
-    <div>
+    <Grid fluid style={{ backgroundColor: background }}>
       <Row>
         <Col xs={12}>
           <AppBar
-            style={{ boxShadow: 'none', pointer: 'Cursor' }}
+            style={{ boxShadow: 'none', cursor: 'pointer' }}
             showMenuIconButton={false}
             title="Iducate Protoype"
             onTitleTouchTap={handleTitleTap}
           />
         </Col>
       </Row>
-      <Row style={{ backgroundColor: background }}>
+      <Row>
         <Col xs={12}>
           <Tabs style={styles.navigation} inkBarStyle={{ display: selectedTab === -1 ? 'none' : 'block' }} initialSelectedIndex={selectedTab}>
             <Tab label="Courses" data-route="/courses" onActive={handleActiveTab} />
@@ -33,14 +33,13 @@ const NavigationBar = ({
           </Tabs>
         </Col>
       </Row>
-    </div>);
+    </Grid>);
 
 NavigationBar.propTypes = {
   handleTitleTap: React.PropTypes.func,
   handleActiveTab: React.PropTypes.func,
   background: React.PropTypes.string,
   selectedTab: React.PropTypes.number,
-  hideInkbar: React.PropTypes.bool,
 };
 
 NavigationBar.defaultProps = {
@@ -48,7 +47,6 @@ NavigationBar.defaultProps = {
   handleActiveTab: () => {},
   background: '',
   selectedTab: -1,
-  hideInkbar: false,
 };
 
 export default NavigationBar;

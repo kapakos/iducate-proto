@@ -1,12 +1,12 @@
 {
   "name": "iducate-proto",
-  "version": "0.0.6",
-  "description": "A prototype platform for iducate",
+  "version": "0.0.7",
+  "description": "A prototype framework for the iducate platform",
   "repository": {
     "type": "git",
-    "url": "https://github.com/hugojing/lightweight-react-starter.git"
+    "url": "https://github.com/kapakos/iducate-proto.git"
   },
-  "main": "src/main.js",
+  "main": "app.js",
   "scripts": {
     "start": "NODE_ENV=production node app.js",
     "dev": "NODE_ENV=development webpack-dev-server --port 7777 --devtool eval --progress --hide-modules --colors --hot --inline --content-base dist",
