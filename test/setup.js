@@ -1,9 +1,9 @@
 import 'babel-polyfill';
 import 'mock-local-storage';
+import js from 'jsdom';
 
-var jsdom = require('jsdom').jsdom;
-
-var exposedProperties = ['window', 'navigator', 'document'];
+const jsdom = js.jsdom;
+const exposedProperties = ['window', 'navigator', 'document'];
 
 global.document = jsdom('');
 global.window = document.defaultView;
@@ -18,4 +18,4 @@ global.navigator = {
   userAgent: 'node.js',
 };
 
-var documentRef = document;
+const documentRef = document;

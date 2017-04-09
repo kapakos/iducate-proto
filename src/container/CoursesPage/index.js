@@ -8,7 +8,7 @@ import CourseList from '../../components/CourseList';
 import dataService from '../../services/data';
 
 const courseList = dataService.getCourses();
-const providers = dataService.getPartners();
+const providers = dataService.getProviders();
 
 class CoursesPage extends Component {
 
