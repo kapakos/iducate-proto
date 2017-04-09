@@ -1,6 +1,6 @@
 import React from 'react';
 import R from 'ramda';
-import Course, { CourseType } from 'components/course';
+import Course, { CourseType } from '../Course';
 import dataProvider from '../../data';
 
 import './courseList.css';

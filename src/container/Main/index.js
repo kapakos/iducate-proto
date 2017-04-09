@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { hashHistory } from 'react-router';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import NavigationBar from 'components/NavigationBar';
 import R from 'ramda';
+import NavigationBar from '../../components/NavigationBar';
 import routes from '../../routes';
 
 class Main extends Component {

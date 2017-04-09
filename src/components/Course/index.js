@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
+import { Card, CardActions, CardHeader, CardText, CardTitle } from 'material-ui/Card';
 import RaisedButton from 'material-ui/RaisedButton';
 import ActionCheckCircle from 'material-ui/svg-icons/action/check-circle';
 
@@ -11,6 +11,7 @@ const Course = ({ course, saveHandler, removeHandler, savedCourses }) => {
         title={course.title}
         avatar={course.photoUrl}
       />
+      <CardTitle title={course.partnerId} />
       <CardText>
         {course.description}
       </CardText>

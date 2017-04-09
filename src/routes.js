@@ -1,6 +1,6 @@
-import DashboardPage from 'container/DashboardPage';
-import CoursesPage from 'container/CoursesPage';
-import Main from 'container/Main';
+import DashboardPage from './container/DashboardPage';
+import CoursesPage from './container/CoursesPage';
+import Main from './container/Main';
 
 export default [
   {

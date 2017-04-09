@@ -3,14 +3,14 @@ import R from 'ramda';
 import { Grid, Row, Col } from 'react-flexbox-grid';
 import SelectField from 'material-ui/SelectField';
 import AutoComplete from 'material-ui/AutoComplete';
-import CourseList from 'components/CourseList';
 import MenuItem from 'material-ui/MenuItem';
+import CourseList from '../../components/CourseList';
 import dataService from '../../services/data';
 
 const courseList = dataService.getCourses();
 const partners = dataService.getPartners();
 
-class Courses extends Component {
+class CoursesPage extends Component {
 
   static getMenuItem(text, value) {
     return <MenuItem value={value} key={value} primaryText={text} />;
@@ -21,8 +21,9 @@ class Courses extends Component {
     this.state = {
       value: 0,
       partners,
+      allCourses: courseList,
       filteredCourses: courseList,
-      searchQuery: '',
+      searchQuery: 'hallo',
     };
     this.handleChange = this.handleChange.bind(this);
     this.showCourses = this.showCourses.bind(this);
@@ -30,18 +31,18 @@ class Courses extends Component {
   }
 
   filterCourses(searchText) {
-    const filtered = searchText === 'all'
-    ? courseList.filter(
-      course => course.title.includes(searchText))
-    : courseList;
-    this.setState({ filteredCourses: filtered });
+    if (!R.isEmpty(searchText)) {
+      const filtered = this.state.filteredCourses.filter(
+        course => course.title.toLowerCase().includes(searchText.toLowerCase()));
+      this.setState({ filteredCourses: filtered });
+    };
   }
 
-  showCourses(id) {
-    this.setState({ filteredCourses: id === 'all'
-        ? courseList
-        : courseList.filter(
-      course => course.partnerId === id) });
+  showCourses(partnerId) {
+    this.setState({ filteredCourses: partnerId === 'all'
+        ? this.state.allCourses
+        : this.state.allCourses.filter(
+      course => course.partnerId === partnerId) });
   }
 
   handleChange(event, index, value) {
@@ -63,7 +64,7 @@ class Courses extends Component {
               onChange={this.handleChange}
             >
               {this.state.partners.map((partner, index) =>
-                Courses.getMenuItem(partner.name, index))}
+                CoursesPage.getMenuItem(partner.name, index))}
             </SelectField>
           </Col>
         </Row>
@@ -75,7 +76,7 @@ class Courses extends Component {
               floatingLabelText="Search for course"
               filter={AutoComplete.fuzzyFilter}
               dataSource={R.pluck('title')(this.state.filteredCourses)}
-              maxSearchResults={5}
+              maxSearchResults={10}
               onUpdateInput={this.filterCourses}
               fullWidth
             />
@@ -87,4 +88,4 @@ class Courses extends Component {
   }
 }
 
-export default Courses;
+export default CoursesPage;
