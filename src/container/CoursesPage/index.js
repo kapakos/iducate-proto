@@ -8,7 +8,7 @@ import CourseList from '../../components/CourseList';
 import dataService from '../../services/data';
 
 const courseList = dataService.getCourses();
-const partners = dataService.getPartners();
+const providers = dataService.getPartners();
 
 class CoursesPage extends Component {
 
@@ -19,23 +19,34 @@ class CoursesPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: 0,
-      partners,
+      providerIndex: 0,
+      providers,
       allCourses: courseList,
       filteredCourses: courseList,
       searchQuery: 'hallo',
     };
-    this.handleChange = this.handleChange.bind(this);
+    this.handleProviderChange = this.handleProviderChange.bind(this);
     this.showCourses = this.showCourses.bind(this);
     this.filterCourses = this.filterCourses.bind(this);
+    this.getFilteredCoursesByPartner = this.getFilteredCoursesByPartner.bind(this);
+  }
+
+  getFilteredCoursesByPartner() {
+    const partnerId = this.state.providers[this.state.providerIndex].id;
+    return partnerId === 'all'
+      ? this.state.allCourses
+      : this.state.allCourses.filter(course => course.partnerId === partnerId);
   }
 
   filterCourses(searchText) {
+    const currentCourseList = this.getFilteredCoursesByPartner();
     if (!R.isEmpty(searchText)) {
-      const filtered = this.state.filteredCourses.filter(
+      const filtered = currentCourseList.filter(
         course => course.title.toLowerCase().includes(searchText.toLowerCase()));
       this.setState({ filteredCourses: filtered });
-    };
+    } else {
+      this.setState({ filteredCourses: currentCourseList });
+    }
   }
 
   showCourses(partnerId) {
@@ -45,10 +56,10 @@ class CoursesPage extends Component {
       course => course.partnerId === partnerId) });
   }
 
-  handleChange(event, index, value) {
+  handleProviderChange(event, index, value) {
     if (value != null) {
-      this.setState({ value });
-      const id = this.state.partners[value].id;
+      this.setState({ providerIndex: value });
+      const id = this.state.providers[value].id;
       this.showCourses(id);
     }
   }
@@ -60,10 +71,10 @@ class CoursesPage extends Component {
           <Col xs={12}>
             <SelectField
               floatingLabelText="Select Provider"
-              value={this.state.value}
-              onChange={this.handleChange}
+              value={this.state.providerIndex}
+              onChange={this.handleProviderChange}
             >
-              {this.state.partners.map((partner, index) =>
+              {this.state.providers.map((partner, index) =>
                 CoursesPage.getMenuItem(partner.name, index))}
             </SelectField>
           </Col>
