@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardActions, CardHeader, CardText, CardTitle } from 'material-ui/Card';
 import RaisedButton from 'material-ui/RaisedButton';
 import ActionCheckCircle from 'material-ui/svg-icons/action/check-circle';
+import content from './content';
 
 const Course = ({ course, saveHandler, removeHandler, savedCourses }) => {
   const saved = savedCourses.indexOf(course.id) > -1;
@@ -18,10 +19,10 @@ const Course = ({ course, saveHandler, removeHandler, savedCourses }) => {
       <CardActions>
         <RaisedButton
           primary
-          style={{ borderRadius: '0' }}
+          style={{ borderRadius: '0', width: '200px' }}
           default
-          onTouchTap={() => { saved ? removeHandler(course.id) : saveHandler(course.id); }}
-          label={saved ? 'Remove from my Courses' : 'Save to my courses'}
+          onTouchTap={() => saved ? removeHandler(course.id) : saveHandler(course.id)}
+          label={saved ? content.REMOVE_COURSE : content.SAVE_COURSE}
           icon={saved && <ActionCheckCircle />}
         />
       </CardActions>

@@ -103,38 +103,21 @@ describe('<CoursesPage/>', () => {
 
   describe('getFilteredCoursesByPartner', () => {
     it('returns the all current courses "all" is selected', () => {
-      wrapper.setState(Object.assign({}, state, { providerIndex: 0 }));
-      const result = wrapper.instance().getFilteredCoursesByPartner();
+      wrapper.setState(state);
+      const result = wrapper.instance().getCoursesByPartner('all');
       expect(result).to.deep.equal(demoCourseList);
     });
 
     it('returns the current courses filtered by partner when "coursera" is selected', () => {
-      wrapper.setState(Object.assign({}, state, { providerIndex: 1 }));
-      const result = wrapper.instance().getFilteredCoursesByPartner();
+      wrapper.setState(state);
+      const result = wrapper.instance().getCoursesByPartner('coursera');
       expect(result).to.deep.equal(demoCourseList.filter(course => course.partnerId === 'coursera'));
     });
 
     it('returns the current courses filtered by partner when "coursera" is selected', () => {
-      wrapper.setState(Object.assign({}, state, { providerIndex: 2 }));
-      const result = wrapper.instance().getFilteredCoursesByPartner();
+      wrapper.setState(state);
+      const result = wrapper.instance().getCoursesByPartner('udacity');
       expect(result).to.deep.equal(demoCourseList.filter(course => course.partnerId === 'udacity'));
-    });
-  });
-
-  describe('showCourses', () => {
-    it('returns all courses when id == "all"', () => {
-      wrapper.setState({ allCourses: demoCourseList });
-      wrapper.instance().showCourses('all');
-      const result = wrapper.state('filteredCourses');
-      expect(result).to.deep.equal(demoCourseList);
-    });
-
-    it('returns 3 courses when id = coursera', () => {
-      wrapper.setState({ allCourses: demoCourseList });
-      wrapper.instance().showCourses('coursera');
-      const result = wrapper.state('filteredCourses');
-      expect(wrapper.state('filteredCourses').length).equal(3);
-      expect(result).to.deep.equal(R.filter(course => course.partnerId === 'coursera', demoCourseList));
     });
   });
 });

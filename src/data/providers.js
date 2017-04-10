@@ -1,4 +1,4 @@
-const partners = [
+const providers = [
   {
     name: 'All',
     id: 'all',
@@ -13,4 +13,4 @@ const partners = [
   },
 ];
 
-export default partners;
+export default providers;

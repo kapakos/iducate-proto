@@ -1,10 +1,10 @@
 import courses from '../data/courses';
-import partners from '../data/partners';
+import providers from '../data/providers';
 
 const getCourses = () => courses;
-const getPartners = () => partners;
+const getProviders = () => providers;
 
 export default {
   getCourses,
-  getPartners,
+  getProviders,
 };
