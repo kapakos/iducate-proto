@@ -7,7 +7,7 @@ import MenuItem from 'material-ui/MenuItem';
 import CourseList from '../../components/CourseList';
 import dataService from '../../services/data';
 
-const courseList = dataService.getCourses();
+const courses = dataService.getCourses();
 const providers = dataService.getProviders();
 
 class CoursesPage extends Component {
@@ -21,25 +21,24 @@ class CoursesPage extends Component {
     this.state = {
       providerIndex: 0,
       providers,
-      allCourses: courseList,
-      filteredCourses: courseList,
-      searchQuery: 'hallo',
+      allCourses: courses,
+      filteredCourses: courses,
     };
     this.handleProviderChange = this.handleProviderChange.bind(this);
-    this.showCourses = this.showCourses.bind(this);
+    this.getCoursesByPartner = this.getCoursesByPartner.bind(this);
     this.filterCourses = this.filterCourses.bind(this);
-    this.getFilteredCoursesByPartner = this.getFilteredCoursesByPartner.bind(this);
   }
 
-  getFilteredCoursesByPartner() {
-    const partnerId = this.state.providers[this.state.providerIndex].id;
+  getCoursesByPartner(partnerId) {
     return partnerId === 'all'
-      ? this.state.allCourses
-      : this.state.allCourses.filter(course => course.partnerId === partnerId);
+        ? this.state.allCourses
+        : this.state.allCourses.filter(
+      course => course.partnerId === partnerId);
   }
 
   filterCourses(searchText) {
-    const currentCourseList = this.getFilteredCoursesByPartner();
+    const partnerId = this.state.providers[this.state.providerIndex].id;
+    const currentCourseList = this.getCoursesByPartner(partnerId);
     if (!R.isEmpty(searchText)) {
       const filtered = currentCourseList.filter(
         course => course.title.toLowerCase().includes(searchText.toLowerCase()));
@@ -49,18 +48,11 @@ class CoursesPage extends Component {
     }
   }
 
-  showCourses(partnerId) {
-    this.setState({ filteredCourses: partnerId === 'all'
-        ? this.state.allCourses
-        : this.state.allCourses.filter(
-      course => course.partnerId === partnerId) });
-  }
-
   handleProviderChange(event, index, value) {
     if (value != null) {
       this.setState({ providerIndex: value });
       const id = this.state.providers[value].id;
-      this.showCourses(id);
+      this.setState({ filteredCourses: this.getCoursesByPartner(id) });
     }
   }
 
