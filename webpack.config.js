@@ -4,8 +4,8 @@ const precss = require('precss');
 const autoprefixer = require('autoprefixer');
 const values = require('postcss-modules-values');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-var CleanWebpackPlugin = require('clean-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 const ROOT_PATH = path.resolve(__dirname);
 const SRC_PATH = path.resolve(ROOT_PATH, 'src');
