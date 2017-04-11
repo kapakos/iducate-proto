@@ -15,6 +15,7 @@ class Main extends Component {
     this.handleTitleTap = this.handleTitleTap.bind(this);
     this.getSelectedTab = this.getSelectedTab.bind(this);
     this.handleActive = this.handleActive.bind(this);
+    this.handleVerticalMenuTap = this.handleVerticalMenuTap.bind(this);
   }
 
   getSelectedTab() {
@@ -32,12 +33,17 @@ class Main extends Component {
     this.setState({ selectedTab: -1 });
   }
 
+  handleVerticalMenuTap(event, value) {
+    hashHistory.push(`${value.props['data-route']}`);
+  }
+
   render() {
     return (
       <div>
         <NavigationBar
           handleTitleTap={this.handleTitleTap}
           handleActiveTab={this.handleActive}
+          handleVerticalMenuTap={this.handleVerticalMenuTap}
           background={this.props.muiTheme.palette.primary1Color}
           selectedTab={this.state.selectedTab}
         />

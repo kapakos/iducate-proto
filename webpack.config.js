@@ -12,7 +12,7 @@ const SRC_PATH = path.resolve(ROOT_PATH, 'src');
 const DIST_PATH = path.resolve(ROOT_PATH, 'dist');
 
 const packageVersion = process.env.npm_package_version;
-const getEnv = function () {
+const getEnv = function getEnv() {
   return process.env.NODE_ENV;
 };
 

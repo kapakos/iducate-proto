@@ -23,7 +23,7 @@ const getCourses = async () => {
 const saveCourse = async (id) => {
   const courseList = await getCourses();
   const storage = await getStorage();
-  if(courseList.indexOf(id) === -1){
+  if (courseList.indexOf(id) === -1) {
     courseList.push(id);
     storage.setItem(storageKey, JSON.stringify(courseList));
   }
