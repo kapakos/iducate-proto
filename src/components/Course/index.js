@@ -21,7 +21,7 @@ const Course = ({ course, saveHandler, removeHandler, savedCourses }) => {
           primary
           style={{ borderRadius: '0', width: '200px' }}
           default
-          onTouchTap={() => saved ? removeHandler(course.id) : saveHandler(course.id)}
+          onTouchTap={() => (saved ? removeHandler(course.id) : saveHandler(course.id))}
           label={saved ? content.REMOVE_COURSE : content.SAVE_COURSE}
           icon={saved && <ActionCheckCircle />}
         />

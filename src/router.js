@@ -9,7 +9,7 @@ const Routes = (
   <MuiThemeProvider muiTheme={muiTheme}>
     <Router history={hashHistory}>
       <Route path="/" component={Main}>
-        {routes.map(route => (route.name !== 'home') &&
+        {routes.map(route => (route.type !== 'logo') &&
           <Route path={route.path} key={route.name} component={route.component} />)}
       </Route>
     </Router>
