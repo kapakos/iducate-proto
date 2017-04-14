@@ -1,6 +1,7 @@
 import sinon from 'sinon';
+import moment from 'moment';
 import { expect } from 'chai';
-import dataProvider from '../';
+import dataStore from '../store';
 
 global.window = {};
 global.window.localStorage = localStorage;
@@ -29,6 +30,15 @@ const mockedCourseList = [{
 },
 ];
 
+const mockedUser = {
+  id: 0,
+  userName: 'pkapako',
+  firstName: 'Petros',
+  lastName: 'Kapakos',
+  dob: moment('19770116').toString(),
+  email: 'kapakospetros@gmail.com',
+};
+
 describe('Data Provider', () => {
   let sandbox;
 
@@ -56,7 +66,7 @@ describe('Data Provider', () => {
 
   describe('Save and Get Courses from localStorage', () => {
     it('returns the localStorage', () => {
-      const courses = dataProvider.getCourses();
+      const courses = dataStore.getCourses();
       return courses.then((courseList) => {
         expect(courseList).to.be.an('Array');
       });
@@ -64,38 +74,57 @@ describe('Data Provider', () => {
 
     it('returns data from local storage', () => {
       global.window.localStorage.setItem('__courses__iducate__', JSON.stringify([mockedCourseList[0]]));
-      const courses = dataProvider.getCourses();
+      const courses = dataStore.getCourses();
       return courses.then((courseList) => {
         expect(courseList[0].id).equal('66666');
       });
     });
 
     it('saves data to the localStorage', async () => {
-      await dataProvider.saveCourse(mockedCourseList[0].id);
-      const courseList = await dataProvider.getCourses();
+      await dataStore.saveCourse(mockedCourseList[0].id);
+      const courseList = await dataStore.getCourses();
       expect(courseList[0]).equal('66666');
     });
 
     it('appends data to the localStorage', async () => {
-      await dataProvider.saveCourse(mockedCourseList[0].id);
-      await dataProvider.saveCourse(mockedCourseList[1].id);
-      await dataProvider.saveCourse(mockedCourseList[2].id);
-      const courses = await dataProvider.getCourses();
+      await dataStore.saveCourse(mockedCourseList[0].id);
+      await dataStore.saveCourse(mockedCourseList[1].id);
+      await dataStore.saveCourse(mockedCourseList[2].id);
+      const courses = await dataStore.getCourses();
       expect(courses.length).equal(3);
       expect(courses[0]).equal('66666');
       expect(courses[1]).equal('ud1016');
       expect(courses[2]).equal('ud1014');
-      await dataProvider.removeCourse('ud1016');
-      const newCourses = await dataProvider.getCourses();
+      await dataStore.removeCourse('ud1016');
+      const newCourses = await dataStore.getCourses();
       expect(newCourses.length).equal(2);
     });
 
     it('only adds an id to the storage if it does not already exist', async () => {
-      await dataProvider.saveCourse(mockedCourseList[0].id);
-      await dataProvider.saveCourse(mockedCourseList[0].id);
-      const courses = await dataProvider.getCourses();
+      await dataStore.saveCourse(mockedCourseList[0].id);
+      await dataStore.saveCourse(mockedCourseList[0].id);
+      const courses = await dataStore.getCourses();
       expect(courses.length).equal(1);
       expect(courses[0]).equal('66666');
+    });
+  });
+
+  describe('Save new or update user from localstorage', () => {
+    it('returns the user from the local storage', async () => {
+      global.window.localStorage.setItem('__user__iducate__', JSON.stringify(mockedUser));
+      const user = await dataStore.getUser();
+      expect(user).to.deep.equal(mockedUser);
+    });
+
+    it('returns an empty array/object if user is not in local storage', async () => {
+      global.window.localStorage.setItem('__user__iducate__', '');
+      const user = await dataStore.getUser();
+      expect(user).to.be.empty;
+    });
+
+    it('returns an empty array/object if user key is not in local storage', async () => {
+      const user = await dataStore.getUser();
+      expect(user).to.be.empty;
     });
   });
 });

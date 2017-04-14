@@ -3,9 +3,10 @@ import moment from 'moment';
 const users = [
   {
     id: 0,
+    userName: 'pkapako',
     firstName: 'Petros',
     lastName: 'Kapakos',
-    dob: moment('19770116').toString(),
+    dateOfBirth: moment('19770116').toString(),
     email: 'kapakospetros@gmail.com',
   },
 ];

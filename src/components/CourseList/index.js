@@ -1,7 +1,7 @@
 import React from 'react';
 import R from 'ramda';
 import Course, { CourseType } from '../Course';
-import dataProvider from '../../data';
+import dataStore from '../../data/store';
 
 import './courseList.css';
 
@@ -29,21 +29,21 @@ class CourseList extends React.Component {
 
   componentWillMount() {
     const self = this;
-    dataProvider.getCourses()
+    dataStore.getCourses()
     .then((courses) => {
       self.setState({ savedCourses: courses });
     });
   }
 
   addCourse(id) {
-    dataProvider.saveCourse(id);
+    dataStore.saveCourse(id);
     const courses = this.state.savedCourses;
     courses.push(id);
     this.setState({ savedCourses: courses });
   }
 
   removeCourse(id) {
-    dataProvider.removeCourse(id);
+    dataStore.removeCourse(id);
     const courses = this.state.savedCourses;
     this.setState({ savedCourses: R.without([id], courses) });
   }

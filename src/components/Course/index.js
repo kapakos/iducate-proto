@@ -17,14 +17,15 @@ const Course = ({ course, saveHandler, removeHandler, savedCourses }) => {
         {course.description}
       </CardText>
       <CardActions>
-        <RaisedButton
-          primary
-          style={{ borderRadius: '0', width: '200px' }}
-          default
-          onTouchTap={() => (saved ? removeHandler(course.id) : saveHandler(course.id))}
-          label={saved ? content.REMOVE_COURSE : content.SAVE_COURSE}
-          icon={saved && <ActionCheckCircle />}
-        />
+        <div>
+          <RaisedButton
+            style={{ width: '200px', margin: 12 }}
+            primary
+            onTouchTap={() => (saved ? removeHandler(course.id) : saveHandler(course.id))}
+            label={saved ? content.REMOVE_COURSE : content.SAVE_COURSE}
+            icon={saved && <ActionCheckCircle />}
+          />
+        </div>
       </CardActions>
     </Card>
   );

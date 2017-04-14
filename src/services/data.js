@@ -1,6 +1,6 @@
-import courses from '../data/courses';
-import providers from '../data/providers';
-import users from '../data/users';
+import courses from './courses';
+import providers from './providers';
+import users from './users';
 
 const getCourses = () => courses;
 const getProviders = () => providers;
