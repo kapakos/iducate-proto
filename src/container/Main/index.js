@@ -35,6 +35,7 @@ class Main extends Component {
 
   handleVerticalMenuTap(event, value) {
     hashHistory.push(`${value.props['data-route']}`);
+    this.setState({ selectedTab: -1 });
   }
 
   render() {
