@@ -8,7 +8,18 @@ const styles = {
   navigation: {
     width: '250px',
   },
+  tab: {
+    deactivated: {
+      color: 'rgba(255, 255, 255, 0.701961)',
+    },
+    activated: {
+      color: 'rgba(255, 255, 255, 1)',
+    },
+  },
 };
+
+const getDecativatedTabColorStyle = (selectedTab, index) =>
+  (selectedTab === index ? styles.tab.activated.color : styles.tab.deactivated.color);
 
 const NavigationBar = ({
   handleTitleTap,
@@ -31,9 +42,18 @@ const NavigationBar = ({
       </Row>
       <Row>
         <Col xs={12}>
-          <Tabs style={styles.navigation} inkBarStyle={{ display: selectedTab === -1 ? 'none' : 'block' }} initialSelectedIndex={selectedTab}>
-            <Tab label="Courses" data-route="/courses" onActive={handleActiveTab} />
-            <Tab label="Dashboard" data-route="/dashboard" onActive={handleActiveTab} />
+          <Tabs style={styles.navigation} inkBarStyle={{ display: selectedTab !== 0 && selectedTab !== 1 ? 'none' : 'block' }} initialSelectedIndex={selectedTab}>
+            <Tab
+              label="Courses"
+              style={{ color: getDecativatedTabColorStyle(selectedTab, 0) }}
+              data-route="/courses" onActive={handleActiveTab}
+            />
+            <Tab
+              label="Dashboard"
+              style={{ color: getDecativatedTabColorStyle(selectedTab, 1) }}
+              data-route="/dashboard"
+              onActive={handleActiveTab}
+            />
           </Tabs>
         </Col>
       </Row>
