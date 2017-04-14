@@ -2,6 +2,7 @@ import R from 'ramda';
 import utilities from '../utilities';
 
 const storageKey = '__courses__iducate__';
+const userStorageKey = '__user__iducate__';
 
 const getStorage = () => new Promise((resolve, reject) => {
   if (utilities.isStorageAvailable('localStorage')) {
@@ -11,13 +12,28 @@ const getStorage = () => new Promise((resolve, reject) => {
   }
 });
 
-const getCourses = async () => {
+const getData = async (key) => {
   const storage = await getStorage();
-  const storedCourses = storage.getItem(storageKey);
-  if (!R.isNil(storedCourses) && !R.isEmpty(storedCourses)) {
-    return JSON.parse(storedCourses);
+  const storedData = storage.getItem(key);
+  if (!R.isNil(storedData) && !R.isEmpty(storedData)) {
+    return JSON.parse(storedData);
   }
   return [];
+};
+
+const getCourses = async () => {
+  const courses = await getData(storageKey);
+  return courses;
+};
+
+const getUser = async () => {
+  const user = await getData(userStorageKey);
+  return user;
+};
+
+const newOrUpdateUser = async (user) => {
+  const storage = await getStorage();
+  storage.setItem(userStorageKey, JSON.stringify(user));
 };
 
 const saveCourse = async (id) => {
@@ -37,6 +53,8 @@ const removeCourse = async (id) => {
 };
 
 export default {
+  getUser,
+  newOrUpdateUser,
   getCourses,
   saveCourse,
   removeCourse,

@@ -1,65 +1,73 @@
 import React from 'react';
-import TextField from 'material-ui/TextField';
-import { Grid, Row, Col } from 'react-flexbox-grid';
-import DatePicker from 'material-ui/DatePicker';
+import R from 'ramda';
+import moment from 'moment';
+import { Grid } from 'react-flexbox-grid';
+import UserForm from '../../components/UserForm';
+import content from './content';
+import dataStore from '../../data/store';
 
 class SettingsPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      userNameErrorText: '',
-      firstNameErrorText: '',
-      lastNameErrorText: '',
-      emailErrorText: '',
+      errorText: {
+        userNameErrorText: '',
+        firstNameErrorText: '',
+        lastNameErrorText: '',
+        emailErrorText: '',
+      },
+      user: {},
+      content,
     };
+    this.enterTextHandler = this.enterTextHandler.bind(this);
+    this.enterDateHandler = this.enterDateHandler.bind(this);
+    this.getErrorText = this.getErrorText.bind(this);
   }
 
+  componentDidMount() {
+    const self = this;
+    dataStore.getUser()
+    .then((user) => {
+      if (!R.isEmpty(user)) {
+        self.setState({ user });
+      }
+    });
+  }
+
+  getErrorText(name, value) {
+    return R.isEmpty(value) ? R.find(R.propEq('name', name))(this.state.content).errorText : '';
+  }
+
+  enterTextHandler(event, value) {
+    this.setState({
+      user: Object.assign({}, this.state.user, { [event.target.name]: value }),
+      errorText: {
+        [`${event.target.name}ErrorText`]: this.getErrorText(event.target.name, value),
+      },
+    });
+  }
+
+  enterDateHandler(event, value) {
+    this.setState({
+      user: Object.assign({}, this.state.user, { dateOfBirth: moment(value) }),
+    });
+  }
+
+
   render() {
+    const user = this.state.user;
+    if (R.isEmpty(user)) {
+      return <div>Loading...</div>;
+    }
     return (
       <Grid fluid>
-        <Row>
-          <Col xs={12}>
-            <TextField
-              floatingLabelText="User Name"
-              errorText={this.state.userNameErrorText}
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={12}>
-            <TextField
-              floatingLabelText="First Name"
-              errorText={this.state.firstNameErrorText}
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={12}>
-            <TextField
-              floatingLabelText="Last Name"
-              errorText={this.state.lastNameErrorText}
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={12}>
-            <DatePicker
-              container="inline"
-              floatingLabelText="Date of Birth"
-              autoOk
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={12}>
-            <TextField
-              hintText="John@doe.com"
-              floatingLabelText="Email"
-              errorText={this.state.emailErrorText}
-              type="email"
-            />
-          </Col>
-        </Row>
+        <UserForm
+          fieldConfig={this.state.content}
+          user={this.state.user}
+          onTextEnterHandler={this.enterTextHandler}
+          onDateEnterHandler={this.enterDateHandler}
+          errorText={this.state.errorText}
+        />
       </Grid>);
   }
 }
