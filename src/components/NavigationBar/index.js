@@ -6,7 +6,7 @@ import VerticalNavigation from '../VerticalNavigation';
 
 const styles = {
   navigation: {
-    width: '250px',
+    width: '125px',
   },
   tab: {
     deactivated: {
@@ -48,12 +48,12 @@ const NavigationBar = ({
               style={{ color: getDecativatedTabColorStyle(selectedTab, 0) }}
               data-route="/courses" onActive={handleActiveTab}
             />
-            <Tab
+            {/* <Tab
               label="Dashboard"
               style={{ color: getDecativatedTabColorStyle(selectedTab, 1) }}
               data-route="/dashboard"
               onActive={handleActiveTab}
-            />
+            />*/}
           </Tabs>
         </Col>
       </Row>
