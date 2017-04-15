@@ -7,6 +7,16 @@ import content from './content';
 import dataStore from '../../data/store';
 
 class SettingsPage extends React.Component {
+  static getDefaultUser() {
+    return {
+      id: 0,
+      userName: '',
+      firstName: '',
+      lastName: '',
+      dateOfBirth: moment('19770116').toString(),
+      email: '',
+    };
+  }
   constructor(props) {
     super(props);
     this.state = {
@@ -30,6 +40,8 @@ class SettingsPage extends React.Component {
     .then((user) => {
       if (!R.isEmpty(user)) {
         self.setState({ user });
+      } else {
+        self.setState({ user: SettingsPage.getDefaultUser() });
       }
     });
   }
@@ -37,7 +49,7 @@ class SettingsPage extends React.Component {
   getErrorText(name, value) {
     return R.isEmpty(value) ? R.find(R.propEq('name', name))(this.state.content).errorText : '';
   }
-
+  
   enterTextHandler(event, value) {
     this.setState({
       user: Object.assign({}, this.state.user, { [event.target.name]: value }),

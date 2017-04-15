@@ -9,13 +9,21 @@ import { Row, Col } from 'react-flexbox-grid';
 import DatePicker from 'material-ui/DatePicker';
 import dataStore from '../../data/store';
 
+const styles = {
+  field: {
+    width: '100%',
+  },
+};
+
 class UserForm extends React.Component {
   static wrapper(children, fieldName) {
-    return (<Row key={fieldName}>
-      <Col xs={12}>
-        {children}
-      </Col>
-    </Row>);
+    return (
+      <Row key={fieldName}>
+        <Col xs={3}>
+          {children}
+        </Col>
+      </Row>
+    );
   }
   constructor(props) {
     super(props);
@@ -45,6 +53,7 @@ class UserForm extends React.Component {
           type={userField.type}
           errorText={errorText}
           value={savedValue}
+          style={styles.field}
         />, userField.name);
     }
     return UserForm.wrapper(
@@ -56,6 +65,7 @@ class UserForm extends React.Component {
         floatingLabelText={userField.label}
         autoOk
         value={new Date(savedValue)}
+        textFieldStyle={styles.field}
       />, userField.name);
   }
 
@@ -92,24 +102,27 @@ class UserForm extends React.Component {
     onTextEnterHandler,
     onDateEnterHandler,
     errorText } = this.props;
-    return (<form key={'submitform'} onSubmit={this.handleSubmit}>
-      {fieldConfig.map(field =>
-        this.getUserFields(
-          user[field.name],
-          onTextEnterHandler,
-          onDateEnterHandler,
-          errorText[`${field.name}ErrorText`],
-          field,
-          ),
-       )}
-      <RaisedButton key="submit" label="Save" primary type="submit" />
-      <Snackbar
-        open={this.state.snackbar}
-        message="User Data saved"
-        autoHideDuration={3000}
-        onRequestClose={this.handleSnackbarClose}
-      />
-    </form>);
+    return (
+      <div>
+        <form key={'submitform'} onSubmit={this.handleSubmit}>
+          {fieldConfig.map(field =>
+            this.getUserFields(
+              user[field.name],
+              onTextEnterHandler,
+              onDateEnterHandler,
+              errorText[`${field.name}ErrorText`],
+              field,
+              ),
+           )}
+          {UserForm.wrapper(<RaisedButton label="Save" primary type="submit" />, 'submit')}
+        </form>
+        <Snackbar
+          open={this.state.snackbar}
+          message="User Data saved"
+          autoHideDuration={3000}
+          onRequestClose={this.handleSnackbarClose}
+        />
+      </div>);
   }
  }
 
