@@ -7,6 +7,7 @@ import {
 } from 'material-ui/Stepper';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
+import SettingsPage from '../SettingsPage';
 
 class DashboardPage extends Component {
 
@@ -63,6 +64,7 @@ class DashboardPage extends Component {
               <Stepper activeStep={stepIndex}>
                 <Step>
                   <StepLabel>Add you're personal data</StepLabel>
+
                 </Step>
                 <Step>
                   <StepLabel>You're educational details</StepLabel>
