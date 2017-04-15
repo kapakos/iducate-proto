@@ -16,6 +16,14 @@ const styles = {
       color: 'rgba(255, 255, 255, 1)',
     },
   },
+  tab: {
+    deactivated: {
+      color: 'rgba(255, 255, 255, 0.701961)',
+    },
+    activated: {
+      color: 'rgba(255, 255, 255, 1)',
+    },
+  },
 };
 
 const getDecativatedTabColorStyle = (selectedTab, index) =>

@@ -49,7 +49,7 @@ class SettingsPage extends React.Component {
   getErrorText(name, value) {
     return R.isEmpty(value) ? R.find(R.propEq('name', name))(this.state.content).errorText : '';
   }
-
+  
   enterTextHandler(event, value) {
     this.setState({
       user: Object.assign({}, this.state.user, { [event.target.name]: value }),
