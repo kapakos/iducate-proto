@@ -7,33 +7,36 @@ import {
 } from 'material-ui/Stepper';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
-import SettingsPage from '../SettingsPage';
+import UserForm from '../../components/UserForm';
+import userFormConfig from '../../content/userForm';
 
 class DashboardPage extends Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      finished: false,
-      stepIndex: 0,
-    };
-    this.handleNext = this.handleNext.bind(this);
-    this.handlePrev = this.handlePrev.bind(this);
-  }
-
-  getStepContent(stepIndex) {
+  static getStepContent(stepIndex) {
     switch (stepIndex) {
       case 0:
-        return 'Personal data';
+        return (
+          <UserForm />
+        );
       case 1:
         return 'Education';
       case 2:
         return 'Courses';
-      case 2:
+      case 3:
         return 'Future Courses';
       default:
         return 'You\'re a long way from home sonny jim!';
     }
+  }
+ constructor(props) {
+    super(props);
+    this.state = {
+      finished: false,
+      stepIndex: 0,
+      userSaved: false,
+      fieldConfig: userFormConfig,
+    };
+    this.handleNext = this.handleNext.bind(this);
+    this.handlePrev = this.handlePrev.bind(this);
   }
 
   handleNext() {
@@ -63,17 +66,16 @@ class DashboardPage extends Component {
             <div style={{ width: '100%', margin: 'auto' }}>
               <Stepper activeStep={stepIndex}>
                 <Step>
-                  <StepLabel>Add you're personal data</StepLabel>
-
+                  <StepLabel>{'Add you\'re personal data'}</StepLabel>
                 </Step>
                 <Step>
-                  <StepLabel>You're educational details</StepLabel>
+                  <StepLabel>{'You\'re educational details'}</StepLabel>
                 </Step>
                 <Step>
-                  <StepLabel>Online courses you've taken</StepLabel>
+                  <StepLabel>{'Online courses you\'ve taken'}</StepLabel>
                 </Step>
                 <Step>
-                  <StepLabel>Online courses you plan to take</StepLabel>
+                  <StepLabel>{'Online courses you plan to take'}</StepLabel>
                 </Step>
               </Stepper>
               <div style={contentStyle}>
@@ -90,7 +92,7 @@ class DashboardPage extends Component {
                   </p>
           ) : (
             <div>
-              <p>{this.getStepContent(stepIndex)}</p>
+              <div>{DashboardPage.getStepContent(stepIndex)}</div>
               <div style={{ marginTop: 12 }}>
                 <FlatButton
                   label="Back"
