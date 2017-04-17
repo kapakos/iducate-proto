@@ -8,7 +8,6 @@ import {
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import UserForm from '../../components/UserForm';
-import userFormConfig from '../../content/userForm';
 
 class DashboardPage extends Component {
   static getStepContent(stepIndex) {
@@ -27,13 +26,11 @@ class DashboardPage extends Component {
         return 'You\'re a long way from home sonny jim!';
     }
   }
- constructor(props) {
+  constructor(props) {
     super(props);
     this.state = {
       finished: false,
       stepIndex: 0,
-      userSaved: false,
-      fieldConfig: userFormConfig,
     };
     this.handleNext = this.handleNext.bind(this);
     this.handlePrev = this.handlePrev.bind(this);
