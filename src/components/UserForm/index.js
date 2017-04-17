@@ -1,13 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import uuidV4 from 'uuid/v4';
+import R from 'ramda';
 import moment from 'moment';
 import TextField from 'material-ui/TextField';
-import RaisedButton from 'material-ui/RaisedButton';
 import Snackbar from 'material-ui/Snackbar';
+import FlatButton from 'material-ui/FlatButton';
 import { Row, Col } from 'react-flexbox-grid';
 import DatePicker from 'material-ui/DatePicker';
 import dataStore from '../../data/store';
+import content from './content';
+
 
 const styles = {
   field: {
@@ -25,15 +28,55 @@ class UserForm extends React.Component {
       </Row>
     );
   }
+
+  static getDefaultUser() {
+    return {
+      id: 0,
+      userName: '',
+      firstName: '',
+      lastName: '',
+      dateOfBirth: moment().toString(),
+      email: '',
+    };
+  }
+
   constructor(props) {
     super(props);
     this.state = {
       snackbar: false,
+      user: {},
+      userSaved: this.props.userSaved,
+      fieldConfig: content,
+      errorText: {
+        userNameErrorText: '',
+        firstNameErrorText: '',
+        lastNameErrorText: '',
+        emailErrorText: '',
+      },
     };
     this.getUserFields = this.getUserFields.bind(this);
     this.createUser = this.createUser.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.enterTextHandler = this.enterTextHandler.bind(this);
+    this.enterDateHandler = this.enterDateHandler.bind(this);
+    this.getErrorText = this.getErrorText.bind(this);
     this.handleSnackbarClose = this.handleSnackbarClose.bind(this);
+    this.saveUser = this.saveUser.bind(this);
+  }
+
+  componentWillMount() {
+    const self = this;
+    dataStore.getUser()
+    .then((user) => {
+      if (!R.isEmpty(user)) {
+        self.setState({ user });
+      } else {
+        self.setState({ user: UserForm.getDefaultUser() });
+      }
+    });
+  }
+
+  getErrorText(name, value) {
+    return R.isEmpty(value) ? R.find(R.propEq('name', name))(this.state.fieldConfig).errorText : '';
   }
 
   getUserFields(
@@ -69,6 +112,22 @@ class UserForm extends React.Component {
       />, userField.name);
   }
 
+  enterDateHandler(event, value) {
+    this.setState({
+      user: R.merge(this.state.user, { dateOfBirth: moment(value) }),
+    });
+  }
+
+  enterTextHandler(event, value) {
+    const { user, errorText } = this.state;
+    this.setState({
+      user: R.merge(user, { [event.target.name]: value }),
+      errorText: R.merge(errorText, {
+        [`${event.target.name}ErrorText`]: this.getErrorText(event.target.name, value),
+      }),
+    });
+  }
+
   createUser() {
     return {
       id: uuidV4(),
@@ -80,8 +139,13 @@ class UserForm extends React.Component {
     };
   }
 
-  handleSubmit(e) {
-    e.preventDefault();
+  handleSnackbarClose() {
+    this.setState({
+      snackbar: false,
+    });
+  }
+
+  saveUser() {
     const user = this.createUser();
     dataStore.newOrUpdateUser(user);
     this.setState({
@@ -89,57 +153,39 @@ class UserForm extends React.Component {
     });
   }
 
-  handleSnackbarClose() {
-    this.setState({
-      snackbar: false,
-    });
-  }
-
   render() {
-    const {
-    fieldConfig,
-    user,
-    onTextEnterHandler,
-    onDateEnterHandler,
-    errorText } = this.props;
+    if (R.isEmpty(this.state.user)) {
+      return <div>Loading...</div>;
+    }
+
     return (
-      <div>
-        <form key={'submitform'} onSubmit={this.handleSubmit}>
-          {fieldConfig.map(field =>
+      <form onSubmit={this.saveUser}>
+        {this.state.fieldConfig.map(field =>
             this.getUserFields(
-              user[field.name],
-              onTextEnterHandler,
-              onDateEnterHandler,
-              errorText[`${field.name}ErrorText`],
+              this.state.user[field.name],
+              this.enterTextHandler,
+              this.enterDateHandler,
+              this.state.errorText[`${field.name}ErrorText`],
               field,
               ),
            )}
-          {UserForm.wrapper(<RaisedButton label="Save" primary type="submit" />, 'submit')}
-        </form>
+        <FlatButton type="submit" primary label="Save User" />
         <Snackbar
           open={this.state.snackbar}
           message="User Data saved"
           autoHideDuration={3000}
           onRequestClose={this.handleSnackbarClose}
         />
-      </div>);
+      </form>);
   }
  }
 
 UserForm.propTypes = {
-  fieldConfig: PropTypes.arrayOf(PropTypes.shape()),
-  user: PropTypes.shape(),
-  onTextEnterHandler: PropTypes.func,
-  onDateEnterHandler: PropTypes.func,
-  errorText: PropTypes.shape(),
+  userSaved: PropTypes.bool,
 };
 
 UserForm.defaultProps = {
-  fieldConfig: {},
-  user: {},
-  onTextEnterHandler: () => {},
-  onDateEnterHandler: () => {},
-  errorText: '',
+  userSaved: false,
 };
 
 export default UserForm;
