@@ -27,8 +27,7 @@ class DashboardPage extends Component {
         return 'You\'re a long way from home sonny jim!';
     }
   }
-
-  constructor(props) {
+ constructor(props) {
     super(props);
     this.state = {
       finished: false,

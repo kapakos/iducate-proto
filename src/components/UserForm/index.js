@@ -18,6 +18,12 @@ const styles = {
   },
 };
 
+const styles = {
+  field: {
+    width: '100%',
+  },
+};
+
 class UserForm extends React.Component {
   static wrapper(children, fieldName) {
     return (
