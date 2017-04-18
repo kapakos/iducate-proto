@@ -127,4 +127,76 @@ describe('Data Provider', () => {
       expect(user).to.be.empty;
     });
   });
+
+  describe('Save and load education from localstorage', () => {
+    const mockedEducations = [
+      {
+        id: 0,
+        schoolName: 'Bauhaus Universitaet Weimar',
+        degree: 'masters',
+        fieldOfStudy: 'IT',
+        grade: '70%',
+        fromDate: moment('20011001').toString(),
+        toDate: moment('20080830').toString(),
+        description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et jus',
+      },
+      {
+        id: 1,
+        schoolName: 'Technische Oberschule Ulm',
+        degree: 'highschool',
+        fieldOfStudy: '',
+        grade: '2,8',
+        fromDate: moment('19991001').toString(),
+        toDate: moment('20010630').toString(),
+        description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et jus',
+      },
+    ];
+
+    beforeEach(() => {
+      global.window.localStorage.setItem('__educations__iducate__', JSON.stringify(mockedEducations));
+    });
+
+    afterEach(() => {
+      global.window.localStorage.clear();
+    });
+
+    it('returns a list of education items from the storage', async () => {
+      const educations = await dataStore.getEducations();
+      expect(educations).to.deep.equal(mockedEducations);
+    });
+
+    it('adds a new education to the educations list', async () => {
+      const edu = {
+        id: 2,
+        schoolName: 'Fraunhofer Institut',
+        degree: 'phd',
+        fieldOfStudy: 'Virtual Reality Systems',
+        grade: '2,2',
+        fromDate: moment('20101001').toString(),
+        toDate: moment('20120630').toString(),
+        description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et jus',
+      };
+
+      await dataStore.addEducation(edu);
+      const educations = await dataStore.getEducations();
+      expect(educations.length).equal(3);
+    });
+
+    it('does not add anything if id already existst', async () => {
+      const edu = {
+        id: 1,
+        schoolName: 'Fraunhofer Institut',
+        degree: 'phd',
+        fieldOfStudy: 'Virtual Reality Systems',
+        grade: '2,2',
+        fromDate: moment('20101001').toString(),
+        toDate: moment('20120630').toString(),
+        description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et jus',
+      };
+
+      await dataStore.addEducation(edu);
+      const educations = await dataStore.getEducations();
+      expect(educations).to.deep.equal(mockedEducations);
+    });
+  });
 });

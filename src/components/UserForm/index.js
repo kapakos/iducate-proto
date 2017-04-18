@@ -4,7 +4,6 @@ import uuidV4 from 'uuid/v4';
 import R from 'ramda';
 import moment from 'moment';
 import TextField from 'material-ui/TextField';
-import Snackbar from 'material-ui/Snackbar';
 import FlatButton from 'material-ui/FlatButton';
 import { Row, Col } from 'react-flexbox-grid';
 import DatePicker from 'material-ui/DatePicker';
@@ -43,7 +42,6 @@ class UserForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      snackbar: false,
       user: {},
       userSaved: this.props.userSaved,
       fieldConfig: content,
@@ -59,7 +57,6 @@ class UserForm extends React.Component {
     this.enterTextHandler = this.enterTextHandler.bind(this);
     this.enterDateHandler = this.enterDateHandler.bind(this);
     this.getErrorText = this.getErrorText.bind(this);
-    this.handleSnackbarClose = this.handleSnackbarClose.bind(this);
     this.saveUser = this.saveUser.bind(this);
   }
 
@@ -139,18 +136,11 @@ class UserForm extends React.Component {
     };
   }
 
-  handleSnackbarClose() {
-    this.setState({
-      snackbar: false,
-    });
-  }
 
   saveUser() {
     const user = this.createUser();
     dataStore.newOrUpdateUser(user);
-    this.setState({
-      snackbar: true,
-    });
+    this.props.userSaved(user);
   }
 
   render() {
@@ -170,18 +160,12 @@ class UserForm extends React.Component {
               ),
            )}
         <FlatButton type="submit" primary label="Save User" />
-        <Snackbar
-          open={this.state.snackbar}
-          message="User Data saved"
-          autoHideDuration={3000}
-          onRequestClose={this.handleSnackbarClose}
-        />
       </form>);
   }
  }
 
 UserForm.propTypes = {
-  userSaved: PropTypes.bool,
+  userSaved: PropTypes.func,
 };
 
 UserForm.defaultProps = {
