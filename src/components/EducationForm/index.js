@@ -15,7 +15,6 @@ import config from './fieldConfig';
 import dataStore from '../../data/store';
 
 class EducationForm extends React.Component {
-
   static wrapper(children, key) {
     return (
       <Row key={key}>
@@ -172,7 +171,6 @@ class EducationForm extends React.Component {
           <Grid fluid>
             {this.state.fieldConfig.map(field => this.getFields(field))}
           </Grid>
-
         </Dialog>
       </div>
     );
