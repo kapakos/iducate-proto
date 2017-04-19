@@ -3,6 +3,7 @@ import IconButton from 'material-ui/IconButton';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import ContentAddCircleOutline from 'material-ui/svg-icons/content/add-circle-outline';
+import { Grid, Row, Col } from 'react-flexbox-grid';
 import { blue800 } from 'material-ui/styles/colors';
 import R from 'ramda';
 import moment from 'moment';
@@ -14,28 +15,36 @@ import config from './fieldConfig';
 import dataStore from '../../data/store';
 
 class EducationForm extends React.Component {
-  static getDefaultEducation() {
-    return {
-      id: 0,
-      schoolName: '',
-      degree: '',
-      fieldOfStudy: '',
-      grade: '',
-      fromDate: moment().day(-30).toString(),
-      toDate: moment().toString(),
-      description: '',
-    };
+
+  static wrapper(children, key) {
+    return (
+      <Row key={key}>
+        <Col xs={3}>
+          {children}
+        </Col>
+      </Row>
+    );
   }
+
   constructor(props) {
     super(props);
     this.state = {
       dialogOpen: false,
       fieldConfig: config,
-      education: {},
+      education: {
+        schoolName: '',
+        degree: '',
+        fieldOfStudy: '',
+        grade: '',
+        fromDate: moment().day(-30).toString(),
+        toDate: moment().toString(),
+        description: '',
+      },
     };
     this.handleDialogOpen = this.handleDialogOpen.bind(this);
     this.handleDialogClose = this.handleDialogClose.bind(this);
-    this.handlerEnterDate = this.handlerEnterDate.bind(this);
+    this.handleFromDate = this.handleFromDate.bind(this);
+    this.handleToDate = this.handleToDate.bind(this);
     this.handlerEnterText = this.handlerEnterText.bind(this);
     this.handlerSelectField = this.handlerSelectField.bind(this);
     this.getFields = this.getFields.bind(this);
@@ -43,33 +52,33 @@ class EducationForm extends React.Component {
   }
 
   getFields(field) {
-    return this.fieldCreator('', field, this.handlerEnterDate, this.handlerEnterText, this.handlerSelectField);
+    return this.fieldCreator(this.state.education[field.name], field, this.handleFromDate, this.handleToDate, this.handlerEnterText, this.handlerSelectField);
   }
 
   fieldCreator(
     initialValue,
     field,
-    onEnterDateHandler,
+    onEnterFromDateHandler,
+    onEnterToDateHandler,
     onEnterTextHandler,
     onSelectChange,
 ) {
     if (field.type === 'date') {
-      return (
+      return EducationForm.wrapper(
         <DatePicker
           ref={(input) => {
             this[field.name] = input;
           }}
           name={field.name}
-          onChange={onEnterDateHandler}
+          onChange={field.name === 'fromDate' ? onEnterFromDateHandler : onEnterToDateHandler}
           container="inline"
           floatingLabelText={field.label}
           autoOk
-          value={R.isEmpty(initialValue) ? moment() : moment(initialValue)}
-          key={field.name}
-        />
+          value={R.isEmpty(initialValue) ? new Date() : new Date(initialValue)}
+        />, field.name,
       );
     } else if (field.type === 'text') {
-      return (
+      return EducationForm.wrapper(
         <TextField
           ref={(input) => {
             this[field.name] = input;
@@ -81,11 +90,10 @@ class EducationForm extends React.Component {
           errorText={field.errorText}
           value={initialValue}
           multiLine={field.multiLine}
-          key={field.name}
-        />
+        />, field.name,
       );
     } else if (field.type === 'select') {
-      return (
+      return EducationForm.wrapper(
         <SelectField
           ref={(input) => {
             this[field.name] = input;
@@ -93,26 +101,33 @@ class EducationForm extends React.Component {
           floatingLabelText={field.label}
           value={0}
           onChange={onSelectChange}
-          key={field.name}
         >
           {field.options.map((item, index) =>
             <MenuItem value={index} key={item.id} primaryText={item.name} />)}
-        </SelectField>
+        </SelectField>, field.name,
       );
     }
     return (<div />);
   }
 
-  handlerEnterDate(event, value) {
-    console.log('value');
-    console.log(value);
+  handleFromDate(event, value) {
+    const { education } = this.state;
     this.setState({
-      education: R.merge(this.state.education, { [fieldName]: moment(value) }),
+      education: R.merge(education, { fromDate: moment(value) }),
     });
   }
 
-  handlerEnterText(fieldName, value) {
+  handleToDate(event, value) {
+    this.setState({
+      education: R.merge(this.state.education, { toDate: moment(value) }),
+    });
+  }
 
+  handlerEnterText(event, value) {
+    const { education } = this.state;
+    this.setState({
+      education: R.merge(education, { [event.target.name]: value }),
+    });
   }
 
   handlerSelectField(fieldName, option) {
@@ -151,9 +166,13 @@ class EducationForm extends React.Component {
           title="Add Education"
           actions={actions}
           modal
+          autoScrollBodyContent
           open={this.state.dialogOpen}
         >
-          {this.state.fieldConfig.map(field => this.getFields(field))}
+          <Grid fluid>
+            {this.state.fieldConfig.map(field => this.getFields(field))}
+          </Grid>
+
         </Dialog>
       </div>
     );
