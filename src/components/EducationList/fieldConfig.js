@@ -11,7 +11,7 @@ export default [
     order: 1,
   },
   {
-    errorText: 'Please select the degree you received.',
+    errorText: '',
     required: false,
     label: 'Degree',
     type: 'select',

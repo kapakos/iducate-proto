@@ -128,14 +128,13 @@ class UserForm extends React.Component {
   createUser() {
     return {
       id: uuidV4(),
-      userName: this.userName.input.value,
-      firstName: this.firstName.input.value,
-      lastName: this.lastName.input.value,
-      dateOfBirth: moment(this.dateOfBirth.state.date),
-      email: this.email.input.value,
+      userName: this.userName.props.value,
+      firstName: this.firstName.props.value,
+      lastName: this.lastName.props.value,
+      dateOfBirth: moment(this.dateOfBirth.props.value),
+      email: this.email.props.value,
     };
   }
-
 
   saveUser() {
     const user = this.createUser();
