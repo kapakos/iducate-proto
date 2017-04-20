@@ -9,7 +9,7 @@ import Snackbar from 'material-ui/Snackbar';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import UserForm from '../../components/UserForm';
-import EducationForm from '../../components/EducationForm';
+import EducationList from '../../components/EducationList';
 
 class DashboardPage extends Component {
 
@@ -35,7 +35,9 @@ class DashboardPage extends Component {
         );
       case 1:
         return (
-          <EducationForm />
+          <div>
+            <EducationList />
+          </div>
         );
       case 2:
         return 'Courses';
@@ -59,7 +61,6 @@ class DashboardPage extends Component {
       finished: stepIndex >= 2,
       snackBar: true,
     });
-    console.log(user);
   }
 
   handleNext() {

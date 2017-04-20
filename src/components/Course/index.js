@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Card, CardActions, CardHeader, CardText, CardTitle } from 'material-ui/Card';
 import RaisedButton from 'material-ui/RaisedButton';
 import ActionCheckCircle from 'material-ui/svg-icons/action/check-circle';
@@ -32,12 +33,12 @@ const Course = ({ course, saveHandler, removeHandler, savedCourses }) => {
 };
 
 export const CourseType = {
-  title: React.PropTypes.string,
-  subtitle: React.PropTypes.string,
-  homepage: React.PropTypes.string,
-  summary: React.PropTypes.string,
-  short_summary: React.PropTypes.string,
-  key: React.PropTypes.string,
+  title: PropTypes.string,
+  subtitle: PropTypes.string,
+  homepage: PropTypes.string,
+  summary: PropTypes.string,
+  short_summary: PropTypes.string,
+  key: PropTypes.string,
 };
 
 Course.defaultProps = {
@@ -48,10 +49,10 @@ Course.defaultProps = {
 };
 
 Course.propTypes = {
-  course: React.PropTypes.shape(CourseType),
-  saveHandler: React.PropTypes.func.isRequired,
-  removeHandler: React.PropTypes.func.isRequired,
-  savedCourses: React.PropTypes.arrayOf(React.PropTypes.string),
+  course: PropTypes.shape(CourseType),
+  saveHandler: PropTypes.func.isRequired,
+  removeHandler: PropTypes.func.isRequired,
+  savedCourses: PropTypes.arrayOf(React.PropTypes.string),
 };
 
 export default Course;

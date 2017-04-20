@@ -1,6 +1,7 @@
 import sinon from 'sinon';
 import moment from 'moment';
 import { expect } from 'chai';
+import R from 'ramda';
 import dataStore from '../store';
 
 global.window = {};
@@ -177,26 +178,33 @@ describe('Data Provider', () => {
         description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et jus',
       };
 
-      await dataStore.addEducation(edu);
+      await dataStore.newOrUpdateEducation(edu);
       const educations = await dataStore.getEducations();
       expect(educations.length).equal(3);
     });
 
-    it('does not add anything if id already existst', async () => {
-      const edu = {
+    it('updates the an existing education', async () => {
+      const updatedEducation = {
         id: 1,
-        schoolName: 'Fraunhofer Institut',
-        degree: 'phd',
-        fieldOfStudy: 'Virtual Reality Systems',
-        grade: '2,2',
-        fromDate: moment('20101001').toString(),
-        toDate: moment('20120630').toString(),
+        schoolName: 'Technische Oberschule Ulm',
+        degree: 'highschool',
+        fieldOfStudy: '',
+        grade: '2,0',
+        fromDate: moment('19991001').toString(),
+        toDate: moment('20010630').toString(),
         description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et jus',
       };
-
-      await dataStore.addEducation(edu);
+      await dataStore.newOrUpdateEducation(updatedEducation);
       const educations = await dataStore.getEducations();
-      expect(educations).to.deep.equal(mockedEducations);
+      expect(educations[1].grade).equal('2,0');
+    });
+
+    it('removes an education from the list', async () => {
+      const id = 0;
+      await dataStore.deleteEducation(id);
+      const educations = await dataStore.getEducations();
+      expect(educations.length).equals(1);
+      expect(educations[0].id).equals(1);
     });
   });
 });

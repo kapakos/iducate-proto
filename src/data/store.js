@@ -60,15 +60,32 @@ const getEducations = async () => {
   return educations;
 };
 
-const addEducation = async (education) => {
+const newOrUpdateEducation = async (education) => {
   const educationList = await getEducations();
   const educationExists = R.propEq('id', education.id);
   const existingEducation = R.find(educationExists)(educationList);
   if (R.isNil(existingEducation)) {
     educationList.push(education);
     replaceData(educationsStorageKey, educationList);
+    return educationList;
   }
+
+  const newEducationList = R.map(
+      edu => edu.id === existingEducation.id
+      ? R.merge(existingEducation, education)
+      : edu, educationList);
+  replaceData(educationsStorageKey, newEducationList);
+  return newEducationList;
 };
+
+const deleteEducation = async (id) => {
+  const educationList = await getEducations();
+  const matchEducation = edu => edu.id !== id;
+  const newList = R.filter(matchEducation, educationList);
+  replaceData(educationsStorageKey, newList);
+  return newList;
+};
+
 
 export default {
   getUser,
@@ -77,5 +94,6 @@ export default {
   saveCourse,
   removeCourse,
   getEducations,
-  addEducation,
+  newOrUpdateEducation,
+  deleteEducation,
 };

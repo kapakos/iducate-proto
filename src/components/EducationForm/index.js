@@ -1,18 +1,15 @@
 import React from 'react';
-import IconButton from 'material-ui/IconButton';
+import PropTypes from 'prop-types';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import ContentAddCircleOutline from 'material-ui/svg-icons/content/add-circle-outline';
+import uuidV4 from 'uuid/v4';
 import { Grid, Row, Col } from 'react-flexbox-grid';
-import { blue800 } from 'material-ui/styles/colors';
 import R from 'ramda';
 import moment from 'moment';
 import TextField from 'material-ui/TextField';
 import DatePicker from 'material-ui/DatePicker';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
-import config from './fieldConfig';
-import dataStore from '../../data/store';
 
 class EducationForm extends React.Component {
   static wrapper(children, key) {
@@ -27,20 +24,21 @@ class EducationForm extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      dialogOpen: false,
-      fieldConfig: config,
-      education: {
-        schoolName: '',
-        degree: '',
-        fieldOfStudy: '',
-        grade: '',
-        fromDate: moment().day(-30).toString(),
-        toDate: moment().toString(),
-        description: '',
-      },
+    const defaultEducation = {
+      id: '',
+      schoolName: '',
+      degree: 0,
+      fieldOfStudy: '',
+      grade: '',
+      fromDate: moment().day(-30).toString(),
+      toDate: moment().toString(),
+      description: '',
     };
-    this.handleDialogOpen = this.handleDialogOpen.bind(this);
+    this.state = {
+      dialogOpen: true,
+      education: R.isEmpty(this.props.educationInstance) ? defaultEducation : this.props.educationInstance,
+      errorText: {},
+    };
     this.handleDialogClose = this.handleDialogClose.bind(this);
     this.handleFromDate = this.handleFromDate.bind(this);
     this.handleToDate = this.handleToDate.bind(this);
@@ -48,10 +46,24 @@ class EducationForm extends React.Component {
     this.handlerSelectField = this.handlerSelectField.bind(this);
     this.getFields = this.getFields.bind(this);
     this.fieldCreator = this.fieldCreator.bind(this);
+    this.createEducation = this.createEducation.bind(this);
+    this.saveEducation = this.saveEducation.bind(this);
+    this.getErrorText = this.getErrorText.bind(this);
+  }
+
+  getErrorText(name, value) {
+    return R.isEmpty(value) ? R.find(R.propEq('name', name))(this.state.fieldConfig).errorText : '';
   }
 
   getFields(field) {
-    return this.fieldCreator(this.state.education[field.name], field, this.handleFromDate, this.handleToDate, this.handlerEnterText, this.handlerSelectField);
+    return this.fieldCreator(
+      this.state.education[field.name],
+      field, this.handleFromDate,
+      this.handleToDate,
+      this.handlerEnterText,
+      this.handlerSelectField,
+      this.state.errorText,
+      );
   }
 
   fieldCreator(
@@ -61,6 +73,7 @@ class EducationForm extends React.Component {
     onEnterToDateHandler,
     onEnterTextHandler,
     onSelectChange,
+    errorText,
 ) {
     if (field.type === 'date') {
       return EducationForm.wrapper(
@@ -86,7 +99,7 @@ class EducationForm extends React.Component {
           onChange={onEnterTextHandler}
           floatingLabelText={field.label}
           type={field.type}
-          errorText={field.errorText}
+          errorText={errorText[field.name]}
           value={initialValue}
           multiLine={field.multiLine}
         />, field.name,
@@ -98,7 +111,7 @@ class EducationForm extends React.Component {
             this[field.name] = input;
           }}
           floatingLabelText={field.label}
-          value={0}
+          value={initialValue}
           onChange={onSelectChange}
         >
           {field.options.map((item, index) =>
@@ -126,19 +139,43 @@ class EducationForm extends React.Component {
     const { education } = this.state;
     this.setState({
       education: R.merge(education, { [event.target.name]: value }),
+      errorText: {
+        [event.target.name]: this.getErrorText(event.target.name, value),
+      },
     });
   }
 
-  handlerSelectField(fieldName, option) {
 
-  }
-
-  handleDialogOpen() {
-    this.setState({ dialogOpen: true });
+  handlerSelectField(event, index, value) {
+    if (value != null) {
+      this.setState({
+        education: R.merge(this.state.education, { degree: value }),
+      });
+    }
   }
 
   handleDialogClose() {
     this.setState({ dialogOpen: false });
+    this.props.closeDialog();
+  }
+
+  async saveEducation() {
+    const education = this.createEducation();
+    this.props.updateEducation(education);
+    this.handleDialogClose();
+  }
+
+  createEducation() {
+    return {
+      id: R.isEmpty(this.state.education.id) ? uuidV4() : this.state.education.id,
+      schoolName: this.schoolName.props.value,
+      degree: this.degree.props.value,
+      fieldOfStudy: this.fieldOfStudy.props.value,
+      grade: this.grade.props.value,
+      fromDate: moment(this.fromDate.props.value),
+      toDate: moment(this.toDate.props.value),
+      description: this.description.props.value,
+    };
   }
 
   render() {
@@ -149,18 +186,14 @@ class EducationForm extends React.Component {
         onTouchTap={this.handleDialogClose}
       />,
       <FlatButton
-        label="Submit"
+        label="Save"
         primary
-        disabled
-        onTouchTap={this.handleDialogClose}
+        onTouchTap={this.saveEducation}
       />,
     ];
 
     return (
       <div>
-        <IconButton tooltip="Add Education" onTouchTap={this.handleDialogOpen}>
-          <ContentAddCircleOutline color={blue800} />
-        </IconButton>
         <Dialog
           title="Add Education"
           actions={actions}
@@ -169,7 +202,7 @@ class EducationForm extends React.Component {
           open={this.state.dialogOpen}
         >
           <Grid fluid>
-            {this.state.fieldConfig.map(field => this.getFields(field))}
+            {this.props.fieldConfig.map(field => this.getFields(field))}
           </Grid>
         </Dialog>
       </div>
@@ -178,3 +211,17 @@ class EducationForm extends React.Component {
 }
 
 export default EducationForm;
+
+EducationForm.propTypes = {
+  updateEducation: PropTypes.func,
+  closeDialog: PropTypes.func,
+  fieldConfig: PropTypes.arrayOf(PropTypes.shape()),
+  educationInstance: PropTypes.shape(),
+};
+
+EducationForm.defaultProps = {
+  updateEducation: () => {},
+  closeDialog: () => {},
+  fieldConfig: [],
+  educationInstance: {},
+};
