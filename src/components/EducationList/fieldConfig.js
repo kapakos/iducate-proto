@@ -21,7 +21,7 @@ export default [
   },
   {
     errorText: 'bla bla wrong',
-    required: true,
+    required: false,
     label: 'Field of Study',
     type: 'text',
     name: 'fieldOfStudy',

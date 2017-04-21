@@ -14,11 +14,9 @@ import MenuItem from 'material-ui/MenuItem';
 class EducationForm extends React.Component {
   static wrapper(children, key) {
     return (
-      <Row key={key}>
-        <Col xs={3}>
-          {children}
-        </Col>
-      </Row>
+      <Col xs={12} sm={6} key={key}>
+        {children}
+      </Col>
     );
   }
 
@@ -55,7 +53,7 @@ class EducationForm extends React.Component {
   }
 
   getErrorText(name, value) {
-    return R.isEmpty(value) ? R.find(R.propEq('name', name))(this.props.fieldConfig).errorText : '';
+    return R.isEmpty(value) ? R.find(R.propEq('name', name))(this.props.fieldConfig).errorText || 'This field is required' : '';
   }
 
   getFields(field) {
@@ -78,6 +76,10 @@ class EducationForm extends React.Component {
     onSelectChange,
     errorText,
 ) {
+    const style = {
+      width: '100%',
+    };
+
     if (field.type === 'date') {
       return EducationForm.wrapper(
         <DatePicker
@@ -89,6 +91,7 @@ class EducationForm extends React.Component {
           container="inline"
           floatingLabelText={field.label}
           autoOk
+          textFieldStyle={style}
           value={R.isEmpty(initialValue) ? new Date() : new Date(initialValue)}
         />, field.name,
       );
@@ -104,6 +107,7 @@ class EducationForm extends React.Component {
           type={field.type}
           errorText={errorText[field.name]}
           value={initialValue}
+          style={style}
           multiLine={field.multiLine}
         />, field.name,
       );
@@ -115,6 +119,7 @@ class EducationForm extends React.Component {
           }}
           floatingLabelText={field.label}
           value={initialValue}
+          style={R.merge(style, { cursor: 'pointer' })}
           onChange={onSelectChange}
         >
           {field.options.map((item, index) =>
@@ -146,7 +151,6 @@ class EducationForm extends React.Component {
     });
   }
 
-
   handlerSelectField(event, index, value) {
     if (value != null) {
       this.setState({
@@ -171,15 +175,15 @@ class EducationForm extends React.Component {
   validateFields(form) {
     const requiredFields = this.props.fieldConfig.filter(field => field.required === true);
     const isValid = R.none(el => R.isEmpty(form[el.name]))(requiredFields);
-    // @TODO Fix error text display when more than one fields are required
     if (!isValid) {
-      const emptyFieldConfigs = R.filter(field => R.isEmpty(form[field.name]), requiredFields);
+      const errorStates = {};
       const setErrorState = (field) => {
-        this.setState({
-          errorText: R.merge(this.state.errorText, { [field.name]: field.errorText }),
-        });
+        errorStates[field.name] = this.getErrorText(field.name, form[field.name]);
       };
-      R.forEach(setErrorState, emptyFieldConfigs);
+      R.forEach(setErrorState, requiredFields);
+      this.setState({
+        errorText: errorStates,
+      });
     }
     return isValid;
   }
@@ -221,7 +225,9 @@ class EducationForm extends React.Component {
           open={this.state.dialogOpen}
         >
           <Grid fluid>
-            {this.props.fieldConfig.map(field => this.getFields(field))}
+            <Row>
+              {this.props.fieldConfig.map(field => this.getFields(field))}
+            </Row>
           </Grid>
         </Dialog>
       </div>
