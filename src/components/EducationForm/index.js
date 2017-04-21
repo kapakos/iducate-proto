@@ -51,10 +51,11 @@ class EducationForm extends React.Component {
     this.createEducation = this.createEducation.bind(this);
     this.saveEducation = this.saveEducation.bind(this);
     this.getErrorText = this.getErrorText.bind(this);
+    this.validateFields = this.validateFields.bind(this);
   }
 
   getErrorText(name, value) {
-    return R.isEmpty(value) ? R.find(R.propEq('name', name))(this.state.fieldConfig).errorText : '';
+    return R.isEmpty(value) ? R.find(R.propEq('name', name))(this.props.fieldConfig).errorText : '';
   }
 
   getFields(field) {
@@ -138,12 +139,10 @@ class EducationForm extends React.Component {
   }
 
   handlerEnterText(event, value) {
-    const { education } = this.state;
+    const { education, errorText } = this.state;
     this.setState({
       education: R.merge(education, { [event.target.name]: value }),
-      errorText: {
-        [event.target.name]: this.getErrorText(event.target.name, value),
-      },
+      errorText: R.merge(errorText, { [event.target.name]: this.getErrorText(event.target.name, value) }),
     });
   }
 
@@ -163,8 +162,26 @@ class EducationForm extends React.Component {
 
   async saveEducation() {
     const education = this.createEducation();
-    this.props.updateEducation(education);
-    this.handleDialogClose();
+    if (this.validateFields(education)) {
+      this.props.updateEducation(education);
+      this.handleDialogClose();
+    }
+  }
+
+  validateFields(form) {
+    const requiredFields = this.props.fieldConfig.filter(field => field.required === true);
+    const isValid = R.none(el => R.isEmpty(form[el.name]))(requiredFields);
+    // @TODO Fix error text display when more than one fields are required
+    if (!isValid) {
+      const emptyFieldConfigs = R.filter(field => R.isEmpty(form[field.name]), requiredFields);
+      const setErrorState = (field) => {
+        this.setState({
+          errorText: R.merge(this.state.errorText, { [field.name]: field.errorText }),
+        });
+      };
+      R.forEach(setErrorState, emptyFieldConfigs);
+    }
+    return isValid;
   }
 
   createEducation() {
@@ -212,8 +229,6 @@ class EducationForm extends React.Component {
   }
 }
 
-export default EducationForm;
-
 EducationForm.propTypes = {
   updateEducation: PropTypes.func,
   closeDialog: PropTypes.func,
@@ -227,3 +242,5 @@ EducationForm.defaultProps = {
   fieldConfig: [],
   educationInstance: {},
 };
+
+export default EducationForm;
