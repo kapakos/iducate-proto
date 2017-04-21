@@ -20,8 +20,8 @@ export default [
     order: 2,
   },
   {
-    errorText: '',
-    required: false,
+    errorText: 'bla bla wrong',
+    required: true,
     label: 'Field of Study',
     type: 'text',
     name: 'fieldOfStudy',
