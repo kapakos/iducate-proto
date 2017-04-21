@@ -207,4 +207,37 @@ describe('Data Provider', () => {
       expect(educations[0].id).equals(1);
     });
   });
+
+  describe('Skills', () => {
+    const mockedSkills = ['React.js', 'Web Development', 'Web Design', 'JavaScript', 'Redux', 'Golang'];
+    beforeEach(() => {
+      global.window.localStorage.setItem('__skills__iducate__', JSON.stringify(mockedSkills));
+    });
+
+    afterEach(() => {
+      global.window.localStorage.clear();
+    });
+
+    it('returns a skills list from the storage', async () => {
+      const skills = await dataStore.getSkills();
+      expect(skills).to.be.an('array');
+      expect(skills.length).equal(6);
+      expect(skills).to.deep.equal(mockedSkills);
+    });
+
+    it('removes a skill from the list', async () => {
+      const skillToDelete = 'Web Design';
+      await dataStore.deleteSkill(skillToDelete);
+      const newSkillList = await dataStore.getSkills();
+      expect(newSkillList.length).equal(5);
+      expect(skillToDelete).to.not.be.oneOf(newSkillList);
+    });
+
+    it('adds a new skill to the list', async () => {
+      const newSkill = 'coding';
+      await dataStore.addSkill(newSkill);
+      const newList = await dataStore.getSkills();
+      expect(newList.length).equal(7);
+    });
+  });
 });

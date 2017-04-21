@@ -4,6 +4,7 @@ import utilities from '../utilities';
 const coursesStorageKey = '__courses__iducate__';
 const userStorageKey = '__user__iducate__';
 const educationsStorageKey = '__educations__iducate__';
+const skillsStorageKey = '__skills__iducate__';
 
 const getStorage = () => new Promise((resolve, reject) => {
   if (utilities.isStorageAvailable('localStorage')) {
@@ -86,6 +87,25 @@ const deleteEducation = async (id) => {
   return newList;
 };
 
+const getSkills = async () => {
+  const skills = await getData(skillsStorageKey);
+  return skills;
+};
+
+const deleteSkill = async (skillToDelete) => {
+  const skillList = await getSkills();
+  const index = R.indexOf(skillToDelete, skillList);
+  const updatedSkillList = R.remove(index, 1, skillList);
+  replaceData(skillsStorageKey, updatedSkillList);
+  return updatedSkillList;
+};
+
+const addSkill = async (skill) => {
+  const skillList = await getSkills();
+  const newSkillsList = R.insert(skillList.length, skill, skillList);
+  replaceData(skillsStorageKey, newSkillsList);
+  return newSkillsList;
+};
 
 export default {
   getUser,
@@ -96,4 +116,7 @@ export default {
   getEducations,
   newOrUpdateEducation,
   deleteEducation,
+  getSkills,
+  deleteSkill,
+  addSkill,
 };

@@ -4,12 +4,14 @@ import {
   Step,
   Stepper,
   StepLabel,
+  StepContent,
 } from 'material-ui/Stepper';
 import Snackbar from 'material-ui/Snackbar';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import UserForm from '../../components/UserForm';
 import EducationList from '../../components/EducationList';
+import SkillList from '../../components/SkillList';
 
 class DashboardPage extends Component {
 
@@ -20,11 +22,13 @@ class DashboardPage extends Component {
       stepIndex: 0,
       snackBar: false,
     };
+    this.steps = 3;
     this.handleNext = this.handleNext.bind(this);
     this.handlePrev = this.handlePrev.bind(this);
     this.getStepContent = this.getStepContent.bind(this);
     this.userSaved = this.userSaved.bind(this);
     this.handleSnackbarClose = this.handleSnackbarClose.bind(this);
+    this.renderStepActions = this.renderStepActions.bind(this);
   }
 
   getStepContent(stepIndex) {
@@ -58,7 +62,7 @@ class DashboardPage extends Component {
     const { stepIndex } = this.state;
     this.setState({
       stepIndex: stepIndex + 1,
-      finished: stepIndex >= 2,
+      finished: stepIndex >= this.steps,
       snackBar: true,
     });
   }
@@ -67,7 +71,7 @@ class DashboardPage extends Component {
     const { stepIndex } = this.state;
     this.setState({
       stepIndex: stepIndex + 1,
-      finished: stepIndex >= 2,
+      finished: stepIndex >= this.steps,
     });
   }
 
@@ -78,10 +82,35 @@ class DashboardPage extends Component {
     }
   }
 
+  renderStepActions(step) {
+    const { stepIndex } = this.state;
+
+    return (
+      <div style={{ margin: '12px 0' }}>
+        <RaisedButton
+          label={stepIndex === this.steps ? 'Finish' : 'Next'}
+          disableTouchRipple
+          disableFocusRipple
+          primary
+          onTouchTap={this.handleNext}
+          style={{ marginRight: 12 }}
+        />
+        {step > 0 && (
+        <FlatButton
+          label="Back"
+          disabled={stepIndex === 0}
+          disableTouchRipple
+          disableFocusRipple
+          onTouchTap={this.handlePrev}
+        />
+        )}
+      </div>
+    );
+  }
 
   render() {
     const { finished, stepIndex } = this.state;
-    const contentStyle = { margin: '0 16px' };
+    const contentStyle = { margin: '20px 0', textAlign: 'center' };
 
     return (
       <div>
@@ -95,51 +124,48 @@ class DashboardPage extends Component {
           <Row>
             <Col xs={12}>
               <div style={{ width: '100%', margin: 'auto' }}>
-                <Stepper activeStep={stepIndex}>
+                <Stepper activeStep={stepIndex} orientation="vertical">
                   <Step>
                     <StepLabel>{'Add you\'re personal data'}</StepLabel>
+                    <StepContent>
+                      <UserForm userSaved={this.userSaved} />
+                      {this.renderStepActions(0)}
+                    </StepContent>
                   </Step>
                   <Step>
                     <StepLabel>{'You\'re educational details'}</StepLabel>
+                    <StepContent>
+                      <EducationList />
+                      {this.renderStepActions(1)}
+                    </StepContent>
                   </Step>
                   <Step>
-                    <StepLabel>{'Online courses you\'ve taken'}</StepLabel>
+                    <StepLabel>{'Skills'}</StepLabel>
+                    <StepContent>
+                      <SkillList />
+                      {this.renderStepActions(2)}
+                    </StepContent>
                   </Step>
                   <Step>
                     <StepLabel>{'Online courses you plan to take'}</StepLabel>
+                    <StepContent>
+                      {this.renderStepActions(3)}
+                    </StepContent>
                   </Step>
                 </Stepper>
-                <div style={contentStyle}>
-                  {finished ? (
-                    <p>
-                      <a
-                        href="#"
-                        onClick={(event) => {
-                          event.preventDefault();
-                          this.setState({ stepIndex: 0, finished: false });
-                        }}
-                      >Click here
-                    </a> to reset the example.
-                  </p>
-          ) : (
-            <div>
-              <div>{this.getStepContent(stepIndex)}</div>
-              <div style={{ marginTop: 12 }}>
-                <FlatButton
-                  label="Back"
-                  disabled={stepIndex === 0}
-                  onTouchTap={this.handlePrev}
-                  style={{ marginRight: 12 }}
-                />
-                <RaisedButton
-                  label={stepIndex === 2 ? 'Finish' : 'Next'}
-                  primary
-                  onTouchTap={this.handleNext}
-                />
-              </div>
-            </div>
-          )}
-                </div>
+                {finished && (
+                <p style={contentStyle}>
+                  <a
+                    href="#"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      this.setState({ stepIndex: 0, finished: false });
+                    }}
+                  >
+              Click here
+            </a> to reset the example.
+          </p>
+        )}
               </div>
             </Col>
           </Row>
