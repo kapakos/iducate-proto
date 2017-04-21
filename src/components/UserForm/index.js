@@ -21,7 +21,7 @@ class UserForm extends React.Component {
   static wrapper(children, fieldName) {
     return (
       <Row key={fieldName}>
-        <Col xs={3}>
+        <Col xs={12} sm={6} md={3}>
           {children}
         </Col>
       </Row>
