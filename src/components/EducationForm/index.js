@@ -10,6 +10,7 @@ import TextField from 'material-ui/TextField';
 import DatePicker from 'material-ui/DatePicker';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
+import config from './fieldConfig';
 
 class EducationForm extends React.Component {
   static wrapper(children, key) {
@@ -32,6 +33,7 @@ class EducationForm extends React.Component {
       toDate: moment().toString(),
       description: '',
     };
+    this.fieldConfig = config;
     this.state = {
       dialogOpen: true,
       education: R.isEmpty(this.props.educationInstance)
@@ -53,7 +55,7 @@ class EducationForm extends React.Component {
   }
 
   getErrorText(name, value) {
-    return R.isEmpty(value) ? R.find(R.propEq('name', name))(this.props.fieldConfig).errorText || 'This field is required' : '';
+    return R.isEmpty(value) ? R.find(R.propEq('name', name))(this.fieldConfig).errorText || 'This field is required' : '';
   }
 
   getFields(field) {
@@ -147,7 +149,8 @@ class EducationForm extends React.Component {
     const { education, errorText } = this.state;
     this.setState({
       education: R.merge(education, { [event.target.name]: value }),
-      errorText: R.merge(errorText, { [event.target.name]: this.getErrorText(event.target.name, value) }),
+      errorText: R.merge(errorText,
+        { [event.target.name]: this.getErrorText(event.target.name, value) }),
     });
   }
 
@@ -173,7 +176,7 @@ class EducationForm extends React.Component {
   }
 
   validateFields(form) {
-    const requiredFields = this.props.fieldConfig.filter(field => field.required === true);
+    const requiredFields = this.fieldConfig.filter(field => field.required === true);
     const isValid = R.none(el => R.isEmpty(form[el.name]))(requiredFields);
     if (!isValid) {
       const errorStates = {};
@@ -226,7 +229,7 @@ class EducationForm extends React.Component {
         >
           <Grid fluid>
             <Row>
-              {this.props.fieldConfig.map(field => this.getFields(field))}
+              {this.fieldConfig.map(field => this.getFields(field))}
             </Row>
           </Grid>
         </Dialog>
@@ -238,14 +241,12 @@ class EducationForm extends React.Component {
 EducationForm.propTypes = {
   updateEducation: PropTypes.func,
   closeDialog: PropTypes.func,
-  fieldConfig: PropTypes.arrayOf(PropTypes.shape()),
   educationInstance: PropTypes.shape(),
 };
 
 EducationForm.defaultProps = {
   updateEducation: () => {},
   closeDialog: () => {},
-  fieldConfig: [],
   educationInstance: {},
 };
 

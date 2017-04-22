@@ -1,17 +1,16 @@
 import React from 'react';
 import { Card, CardActions, CardHeader, CardText, CardTitle } from 'material-ui/Card';
-import RaisedButton from 'material-ui/RaisedButton';
+import { Row, Col } from 'react-flexbox-grid';
 import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
 import IconButton from 'material-ui/IconButton';
-import ContentAddCircleOutline from 'material-ui/svg-icons/content/add-circle-outline';
+import ContentAdd from 'material-ui/svg-icons/content/add';
 import { blue800 } from 'material-ui/styles/colors';
 import R from 'ramda';
 import moment from 'moment';
 import EducationForm from '../EducationForm';
 import dataStore from '../../data/store';
 import dataProvider from '../../services/data';
-import config from './fieldConfig';
 
 class EducationList extends React.Component {
   constructor(props) {
@@ -43,36 +42,49 @@ class EducationList extends React.Component {
   }
 
   getEducationList() {
-    return this.state.educations.sort((a, b) => a.toDate < b.toDate).map(education => (
-      <Card key={education.id} style={{ marginBottom: '20px' }}>
-        <CardHeader
-          title={this.state.degrees[education.degree].name}
-        />
-        <CardTitle title={education.schoolName} />
-        <CardText>
-          <div>From: {moment(education.fromDate).format('LL')}</div>
-          <div>To: {moment(education.toDate).format('LL')}</div>
-        </CardText>
-        <CardText>
-          {education.description}
-        </CardText>
-        <CardActions>
-          <div>
-            <RaisedButton
-              style={{ width: '200px', margin: 12 }}
-              primary
-              onTouchTap={() => { this.openEditEducationFormDialog(education.id); }}
-              label="Edit"
+    return (
+      <Row>
+        <Col xs={12}>{this.state.educations.sort((a, b) => a.toDate < b.toDate).map((education, index) => (
+          <Card style={{ marginBottom: '20px' }} key={education.id}>
+            {index === 0 &&
+            <Row middle="xs" between="xs">
+              <Col xs={4}>
+                <CardTitle title="Education" />
+              </Col>
+              <Col xs={2}>
+                <IconButton tooltip="Add Education" style={{ float: 'right', marginRight: '5px' }} onTouchTap={this.openNewEducationFormDialog}>
+                  <ContentAdd color={blue800} />
+                </IconButton>
+              </Col>
+            </Row>}
+            <CardHeader
+              title={this.state.degrees[education.degree].name}
+              subtitle={education.schoolName}
+              actAsExpander
+              showExpandableButton
             />
-            <FlatButton
-              style={{ width: '200px', margin: 12 }}
-              primary
-              onTouchTap={() => { this.openSaveEducationDialog(education.id); }}
-              label="Delete"
-            />
-          </div>
-        </CardActions>
-      </Card>));
+            <CardText style={{ paddingTop: '0', paddingBottom: '0' }}>{moment(education.fromDate).format('LL')} - {moment(education.toDate).format('LL')}</CardText>
+            <CardText expandable>
+              {education.description}
+            </CardText>
+            <CardActions>
+              <div>
+                <FlatButton
+                  primary
+                  onTouchTap={() => { this.openEditEducationFormDialog(education.id); }}
+                  label="Edit"
+                />
+                <FlatButton
+                  primary
+                  onTouchTap={() => { this.openSaveEducationDialog(education.id); }}
+                  label="Delete"
+                />
+              </div>
+            </CardActions>
+          </Card>))}
+        </Col>
+      </Row>
+    );
   }
 
   async updateEducation(education) {
@@ -145,15 +157,11 @@ class EducationList extends React.Component {
 
     return (
       <div>
-        <IconButton tooltip="Add Education" onTouchTap={this.openNewEducationFormDialog}>
-          <ContentAddCircleOutline color={blue800} />
-        </IconButton>
         {this.state.educationFormOpen &&
           <EducationForm
             educationInstance={this.state.educationFormInstance}
             updateEducation={this.updateEducation}
             closeDialog={this.closeEducationForm}
-            fieldConfig={config}
           />}
         {!R.isEmpty(this.state.educations) && this.getEducationList()}
         <Dialog
