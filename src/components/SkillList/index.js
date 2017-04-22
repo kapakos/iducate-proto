@@ -1,11 +1,7 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import R from 'ramda';
 import Chip from 'material-ui/Chip';
 import { Row, Col } from 'react-flexbox-grid';
-import IconButton from 'material-ui/IconButton';
-import ContentAdd from 'material-ui/svg-icons/content/add';
-import { blue800 } from 'material-ui/styles/colors';
 import dataStore from '../../data/store';
 import SkillForm from '../SkillForm';
 
@@ -47,9 +43,9 @@ class SkillList extends React.Component {
 
   renderSkillList(skill) {
     return (<Chip
+      key={skill}
       onRequestDelete={() => this.handleDeleteSkill(skill)}
       style={{ margin: 4 }}
-      key={skill}
     >
       {skill}
     </Chip>);
@@ -59,7 +55,7 @@ class SkillList extends React.Component {
     return (
       <div>
         <Row middle="xs" between="xs">
-          <Col xs={2}>
+          <Col xs={12}>
             Skills
           </Col>
         </Row>

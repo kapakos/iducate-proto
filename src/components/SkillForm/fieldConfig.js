@@ -2,7 +2,7 @@ export default [
   {
     errorText: 'Please add a skill',
     required: true,
-    label: 'Skill',
+    label: 'Add your Skills',
     type: 'text',
     name: 'skill',
     multiLine: false,

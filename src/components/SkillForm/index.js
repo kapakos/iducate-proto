@@ -13,14 +13,22 @@ class SkillForm extends React.Component {
     this.fieldConfig = config;
     this.getFields = this.getFields.bind(this);
     this.handlerAddSkill = this.handlerAddSkill.bind(this);
+    this.onEnter = this.onEnter.bind(this);
     this.state = {
       errorText: {},
     };
   }
 
+  onEnter(event) {
+    if (event.keyCode === 13) {
+      this.handlerAddSkill();
+    }
+  }
+
   getFields(field) {
     const style = {
       width: '100%',
+      marginLeft: '20px',
     };
     return (<TextField
       ref={(input) => {
@@ -33,6 +41,7 @@ class SkillForm extends React.Component {
       style={style}
       multiLine={field.multiLine}
       key={field.name}
+      onKeyDown={this.onEnter}
     />);
   }
 
@@ -46,7 +55,7 @@ class SkillForm extends React.Component {
     return (
       <div>
         <Row middle="xs">
-          <Col xs={6}>
+          <Col xs={10} sm={6}>
             {this.fieldConfig.map(field => this.getFields(field))}
           </Col>
           <Col xs={1}>

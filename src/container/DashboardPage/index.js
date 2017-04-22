@@ -140,7 +140,7 @@ class DashboardPage extends Component {
                     </StepContent>
                   </Step>
                   <Step>
-                    <StepLabel>{'Skills'}</StepLabel>
+                    <StepLabel>{'What you\'re good at'}</StepLabel>
                     <StepContent>
                       <SkillList />
                       {this.renderStepActions(2)}
