@@ -149,7 +149,8 @@ class EducationForm extends React.Component {
     const { education, errorText } = this.state;
     this.setState({
       education: R.merge(education, { [event.target.name]: value }),
-      errorText: R.merge(errorText, { [event.target.name]: this.getErrorText(event.target.name, value) }),
+      errorText: R.merge(errorText,
+        { [event.target.name]: this.getErrorText(event.target.name, value) }),
     });
   }
 
