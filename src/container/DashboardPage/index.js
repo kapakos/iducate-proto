@@ -6,12 +6,14 @@ import {
   StepLabel,
   StepContent,
 } from 'material-ui/Stepper';
+import R from 'ramda';
 import Snackbar from 'material-ui/Snackbar';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import UserForm from '../../components/UserForm';
 import EducationList from '../../components/EducationList';
 import SkillList from '../../components/SkillList';
+import Message from '../../components/Message';
 
 class DashboardPage extends Component {
 
@@ -20,7 +22,8 @@ class DashboardPage extends Component {
     this.state = {
       finished: false,
       stepIndex: 0,
-      snackBar: false,
+      snackBar: { status: false, message: '' },
+      message: props.location.query.message,
     };
     this.steps = 3;
     this.handleNext = this.handleNext.bind(this);
@@ -29,6 +32,9 @@ class DashboardPage extends Component {
     this.userSaved = this.userSaved.bind(this);
     this.handleSnackbarClose = this.handleSnackbarClose.bind(this);
     this.renderStepActions = this.renderStepActions.bind(this);
+    this.closeMessagePanel = this.closeMessagePanel.bind(this);
+    console.log('message');
+    console.log(props.location.query.message);
   }
 
   getStepContent(stepIndex) {
@@ -52,18 +58,31 @@ class DashboardPage extends Component {
     }
   }
 
+  componentWillMount() {
+
+  }
+
+  closeMessagePanel(event) {
+    event.preventDefault();
+    this.setState({
+      message: '',
+    });
+  }
+
   handleSnackbarClose() {
     this.setState({
-      snackBar: false,
+      snackBar: { status: false, message: '' },
     });
   }
 
   userSaved(user) {
-    const { stepIndex } = this.state;
+    console.log(user);
+
     this.setState({
-      stepIndex: stepIndex + 1,
-      finished: stepIndex >= this.steps,
-      snackBar: true,
+      snackBar: {
+        status: true,
+        message: 'User Data saved',
+      },
     });
   }
 
@@ -115,12 +134,17 @@ class DashboardPage extends Component {
     return (
       <div>
         <Snackbar
-          open={this.state.snackBar}
-          message="User Data saved"
+          open={this.state.snackBar.status}
+          message={this.state.snackBar.message}
           autoHideDuration={3000}
           onRequestClose={this.handleSnackbarClose}
         />
         <Grid fluid>
+          <Row>
+            <Col xs={12}>
+              {!R.isEmpty(this.state.message) && <Message message={this.state.message} handleClose={this.closeMessagePanel} />}
+            </Col>
+          </Row>
           <Row>
             <Col xs={12}>
               <div style={{ width: '100%', margin: 'auto' }}>

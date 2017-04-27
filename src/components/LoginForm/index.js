@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import R from 'ramda';
 import { Card, CardTitle, CardText } from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
@@ -11,9 +12,11 @@ import config from './fieldConfig';
 class LoginForm extends React.Component {
   static wrapper(children, key) {
     return (
-      <Col xs={12} sm={6} key={key}>
-        {children}
-      </Col>
+      <Row key={key}>
+        <Col xs={12}>
+          {children}
+        </Col>
+      </Row>
     );
   }
 
@@ -73,6 +76,7 @@ class LoginForm extends React.Component {
         onChange={this.handleEnterText}
         floatingLabelText={field.label}
         type={field.type}
+        style={{ width: '100%' }}
         errorText={this.state.errorText[field.name]}
         multiLine={field.multiLine}
       />, field.name,
@@ -92,8 +96,10 @@ class LoginForm extends React.Component {
         <Card>
           <CardTitle
             titleColor="white"
+            subtitleColor="white"
             style={{ background: blue800 }}
             title="Welcome"
+            subtitle="This is a demo. Use any username and password"
           />
           <CardText>
             <form onSubmit={this.handleLogin}>
@@ -102,7 +108,7 @@ class LoginForm extends React.Component {
                 label="Login"
                 primary
                 type="submit"
-              />,
+              />
             </form>
           </CardText>
         </Card>
@@ -110,5 +116,13 @@ class LoginForm extends React.Component {
     );
   }
 }
+
+LoginForm.propTypes = {
+  loginHandler: PropTypes.func,
+};
+
+LoginForm.defaultProps = {
+  loginHandler: () => {},
+};
 
 export default LoginForm;
