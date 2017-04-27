@@ -11,6 +11,7 @@ class Main extends Component {
     super(props);
     this.state = {
       selectedTab: this.getSelectedTab(),
+      message: props.location.query.message,
     };
     this.handleTitleTap = this.handleTitleTap.bind(this);
     this.getSelectedTab = this.getSelectedTab.bind(this);

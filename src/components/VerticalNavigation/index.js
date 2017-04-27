@@ -15,7 +15,7 @@ const VerticalNavigation = ({ handleMenuItemTap }) => (
     onItemTouchTap={handleMenuItemTap}
   >
     <MenuItem primaryText="Settings" data-route="/settings" value={1} />
-    <MenuItem primaryText="Sign out" value={2} />
+    <MenuItem primaryText="Sign out" data-route="/signout" value={2} />
   </IconMenu>
 );
 
