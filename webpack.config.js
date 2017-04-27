@@ -58,7 +58,7 @@ module.exports = {
   plugins: [
     new ExtractTextPlugin(`styles.${packageVersion}.css`),
     new HtmlWebpackPlugin({
-      title: 'Iducate Prototype',
+      title: `Iducate Prototype ${packageVersion}`,
       template: 'views/index.ejs', // Load a custom template (ejs by default see the FAQ for details)
     }),
     new CleanWebpackPlugin(['dist'], {
