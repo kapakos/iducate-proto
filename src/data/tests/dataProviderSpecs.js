@@ -1,5 +1,6 @@
 import sinon from 'sinon';
 import moment from 'moment';
+import CryptoJS from 'crypto-js';
 import { expect } from 'chai';
 import R from 'ramda';
 import dataStore from '../store';
@@ -127,6 +128,16 @@ describe('Data Provider', () => {
       const user = await dataStore.getUser();
       expect(user).to.be.empty;
     });
+
+    it('deletes the user from localstorage', async () => {
+      global.window.localStorage.setItem('__user__iducate__', JSON.stringify(mockedUser));
+      let user = await dataStore.getUser();
+      expect(user).to.deep.equal(mockedUser);
+      // global.window.localStorage.removeItem('__user__iducate__');
+      await dataStore.deleteUser();
+      user = await dataStore.getUser();
+      expect(user).to.be.empty;
+    });
   });
 
   describe('Save and load education from localstorage', () => {
@@ -238,6 +249,42 @@ describe('Data Provider', () => {
       await dataStore.addSkill(newSkill);
       const newList = await dataStore.getSkills();
       expect(newList.length).equal(7);
+    });
+  });
+
+  describe('Login', () => {
+    const credentials = {
+      username: 'pkapako',
+      password: 'password',
+    };
+
+    it('saves the login data to the store', async () => {
+      // global.window.localStorage.setItem('__login__iducate__', JSON.stringify(credentials));
+      dataStore.loginUser(credentials, 'secret');
+      const loginData = await dataStore.getLoginData('secret');
+      expect(loginData).to.deep.equal(credentials);
+    });
+
+    it('decrypts the login data', async () => {
+      const encrypted = CryptoJS.AES.encrypt(JSON.stringify(credentials), 'some secret key');
+      global.window.localStorage.setItem('__login__iducate__', encrypted);
+      const loginData = await dataStore.getLoginData('some secret key');
+      expect(loginData).to.deep.equal(credentials);
+    });
+
+    it('returns an empty array if there is no data stored', async () => {
+      const loginData = await dataStore.getLoginData('some secret');
+      expect(loginData).to.be.empty;
+    });
+
+    it('deletes the login data from storage', async () => {
+      const encrypted = CryptoJS.AES.encrypt(JSON.stringify(credentials), 'some secret key');
+      global.window.localStorage.setItem('__login__iducate__', encrypted);
+      let loginData = await dataStore.getLoginData('some secret key');
+      expect(loginData).to.deep.equal(credentials);
+      dataStore.deleteLoginData();
+      loginData = await dataStore.getLoginData('some secret key');
+      expect(loginData).to.be.empty;
     });
   });
 });

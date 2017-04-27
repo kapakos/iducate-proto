@@ -11,9 +11,10 @@ const Routes = (
     <Router history={hashHistory}>
       <Route path="/" component={Main}>
         <IndexRoute component={DashboardPage} />
-        {routes.map(route => (route.type !== 'logo') &&
-          <Route path={route.path} key={route.name} component={route.component} />)}
-      }
+        {
+          routes.map(route => (route.type !== 'logo') &&
+          <Route path={route.path} key={route.name} component={route.component} />)
+        }
       </Route>
     </Router>
   </MuiThemeProvider>

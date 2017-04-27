@@ -23,6 +23,7 @@ class EducationList extends React.Component {
     this.openEditEducationFormDialog = this.openEditEducationFormDialog.bind(this);
     this.closeEducationForm = this.closeEducationForm.bind(this);
     this.getEducationList = this.getEducationList.bind(this);
+    this.getEducationHeader = this.getEducationHeader.bind(this);
     this.state = {
       educations: [],
       degrees: dataProvider.getDegrees(),
@@ -41,22 +42,30 @@ class EducationList extends React.Component {
     });
   }
 
+
+  getEducationHeader() {
+    return (<Row>
+      <Col xs={12}>
+        <Card style={{ boxShadow: 'none' }}>
+          <Row middle="xs" between="xs">
+            <Col xs={4}>
+              <CardTitle title="" />
+            </Col>
+            <Col xs={2}>
+              <IconButton tooltip="Add Education" style={{ float: 'right', marginRight: '5px' }} onTouchTap={this.openNewEducationFormDialog}>
+                <ContentAdd color={blue800} />
+              </IconButton>
+            </Col>
+          </Row>
+        </Card>
+      </Col>
+    </Row>);
+  }
   getEducationList() {
     return (
       <Row>
-        <Col xs={12}>{this.state.educations.sort((a, b) => a.toDate < b.toDate).map((education, index) => (
+        <Col xs={12}>{this.state.educations.sort((a, b) => a.toDate < b.toDate).map(education => (
           <Card style={{ marginBottom: '20px' }} key={education.id}>
-            {index === 0 &&
-            <Row middle="xs" between="xs">
-              <Col xs={4}>
-                <CardTitle title="Education" />
-              </Col>
-              <Col xs={2}>
-                <IconButton tooltip="Add Education" style={{ float: 'right', marginRight: '5px' }} onTouchTap={this.openNewEducationFormDialog}>
-                  <ContentAdd color={blue800} />
-                </IconButton>
-              </Col>
-            </Row>}
             <CardHeader
               title={this.state.degrees[education.degree].name}
               subtitle={education.schoolName}
@@ -163,6 +172,7 @@ class EducationList extends React.Component {
             updateEducation={this.updateEducation}
             closeDialog={this.closeEducationForm}
           />}
+        {this.getEducationHeader()}
         {!R.isEmpty(this.state.educations) && this.getEducationList()}
         <Dialog
           title="Are you sure you want to delete this education?"

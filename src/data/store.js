@@ -1,10 +1,14 @@
 import R from 'ramda';
+import CryptoJS from 'crypto-js';
 import utilities from '../utilities';
 
 const coursesStorageKey = '__courses__iducate__';
 const userStorageKey = '__user__iducate__';
 const educationsStorageKey = '__educations__iducate__';
 const skillsStorageKey = '__skills__iducate__';
+const loginStorageKey = '__login__iducate__';
+
+const secretKey = 'very Secret Key';
 
 const getStorage = () => new Promise((resolve, reject) => {
   if (utilities.isStorageAvailable('localStorage')) {
@@ -40,6 +44,11 @@ const getUser = async () => {
 
 const newOrUpdateUser = async (user) => {
   replaceData(userStorageKey, user);
+};
+
+const deleteUser = async () => {
+  const storage = await getStorage();
+  storage.removeItem(userStorageKey);
 };
 
 const saveCourse = async (id) => {
@@ -107,9 +116,30 @@ const addSkill = async (skill) => {
   return newSkillsList;
 };
 
+const loginUser = async (credentials, secret = secretKey) => {
+  const storage = await getStorage();
+  const encrypted = CryptoJS.AES.encrypt(JSON.stringify(credentials), secret);
+  storage.setItem(loginStorageKey, encrypted);
+};
+
+const getLoginData = async (secret = secretKey) => {
+  const storage = await getStorage();
+  const encrypted = storage.getItem(loginStorageKey);
+  if (R.isEmpty(encrypted) || R.isNil(encrypted)) return [];
+  const bytes = CryptoJS.AES.decrypt(encrypted.toString(), secret);
+  const decryptedLoginData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+  return decryptedLoginData;
+};
+
+const deleteLoginData = async () => {
+  const storage = await getStorage();
+  storage.removeItem(loginStorageKey);
+};
+
 export default {
   getUser,
   newOrUpdateUser,
+  deleteUser,
   getCourses,
   saveCourse,
   removeCourse,
@@ -119,4 +149,7 @@ export default {
   getSkills,
   deleteSkill,
   addSkill,
+  loginUser,
+  getLoginData,
+  deleteLoginData,
 };
