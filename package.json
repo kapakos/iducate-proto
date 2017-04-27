@@ -1,6 +1,6 @@
 {
   "name": "iducate-proto",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "description": "A prototype framework for the iducate platform",
   "repository": {
     "type": "git",
@@ -50,6 +50,7 @@
     "babel-preset-react": "6.23.0",
     "babel-preset-stage-0": "6.22.0",
     "clean-webpack-plugin": "0.1.16",
+    "crypto-js": "^3.1.9-1",
     "css-loader": "0.23.1",
     "extract-text-webpack-plugin": "1.0.1",
     "file-loader": "0.9.0",
