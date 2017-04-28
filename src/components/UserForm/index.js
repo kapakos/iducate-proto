@@ -168,7 +168,7 @@ UserForm.propTypes = {
 };
 
 UserForm.defaultProps = {
-  userSaved: false,
+  userSaved: () => {},
 };
 
 export default UserForm;

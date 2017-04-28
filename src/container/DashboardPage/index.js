@@ -33,8 +33,6 @@ class DashboardPage extends Component {
     this.handleSnackbarClose = this.handleSnackbarClose.bind(this);
     this.renderStepActions = this.renderStepActions.bind(this);
     this.closeMessagePanel = this.closeMessagePanel.bind(this);
-    console.log('message');
-    console.log(props.location.query.message);
   }
 
   getStepContent(stepIndex) {
@@ -76,8 +74,6 @@ class DashboardPage extends Component {
   }
 
   userSaved(user) {
-    console.log(user);
-
     this.setState({
       snackBar: {
         status: true,

@@ -20,7 +20,6 @@ Message.propTypes = {
   handleClose: PropTypes.func,
 };
 
-
 Message.defaultProps = {
   message: '',
   handleClose: () => {},

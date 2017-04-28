@@ -13,7 +13,7 @@ class LoginPage extends React.Component {
   }
 
   async loginUser(credentials) {
-    dataStore.loginUser(credentials);
+    await dataStore.loginUser(credentials);
     const user = await dataStore.getUser();
     const skills = await dataStore.getSkills();
     const educations = await dataStore.getEducations();
@@ -29,6 +29,7 @@ class LoginPage extends React.Component {
     } else {
       queryMessage = content.successMessage.replace('{0}', user.firstName);
     }
+    console.log('im in loginUser action');
     this.context.router.push(
       {
         pathname: '/',
