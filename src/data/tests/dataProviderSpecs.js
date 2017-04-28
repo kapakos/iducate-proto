@@ -1,7 +1,5 @@
-import sinon from 'sinon';
 import moment from 'moment';
 import CryptoJS from 'crypto-js';
-import { expect } from 'chai';
 import R from 'ramda';
 import dataStore from '../store';
 
