@@ -1,6 +1,6 @@
 {
   "name": "iducate-proto",
-  "version": "0.0.23",
+  "version": "0.0.24",
   "description": "A prototype framework for the iducate platform",
   "repository": {
     "type": "git",
