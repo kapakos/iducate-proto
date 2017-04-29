@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Grid, Row, Col } from 'react-flexbox-grid';
 import {
   Step,
@@ -19,12 +20,7 @@ class DashboardPage extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      finished: false,
-      stepIndex: 0,
-      snackBar: { status: false, message: '' },
-      message: props.location.query.message,
-    };
+
     this.steps = 3;
     this.handleNext = this.handleNext.bind(this);
     this.handlePrev = this.handlePrev.bind(this);
@@ -33,8 +29,22 @@ class DashboardPage extends Component {
     this.handleSnackbarClose = this.handleSnackbarClose.bind(this);
     this.renderStepActions = this.renderStepActions.bind(this);
     this.closeMessagePanel = this.closeMessagePanel.bind(this);
+    this.showMessage = this.showMessage.bind(this);
+
+    this.state = {
+      finished: false,
+      stepIndex: 0,
+      snackBar: { status: false, message: '' },
+      message: '',
+      messageShowed: false,
+    };
   }
 
+  componentWillMount() {
+    this.setState({
+      message: this.props.location.state.message,
+    });
+  }
   getStepContent(stepIndex) {
     switch (stepIndex) {
       case 0:
@@ -56,12 +66,12 @@ class DashboardPage extends Component {
     }
   }
 
-  componentWillMount() {
-
-  }
-
   closeMessagePanel(event) {
     event.preventDefault();
+    this.context.router.setState({
+      message: '',
+    });
+    this.props.location.key = 'tet234t';
     this.setState({
       message: '',
     });
@@ -73,7 +83,7 @@ class DashboardPage extends Component {
     });
   }
 
-  userSaved(user) {
+  userSaved() {
     this.setState({
       snackBar: {
         status: true,
@@ -95,6 +105,13 @@ class DashboardPage extends Component {
     if (stepIndex > 0) {
       this.setState({ stepIndex: stepIndex - 1 });
     }
+  }
+
+  showMessage() {
+    if (!R.isEmpty(this.state.message) && !this.state.messageShowed) {
+      return true;
+    }
+    return false;
   }
 
   renderStepActions(step) {
@@ -138,7 +155,10 @@ class DashboardPage extends Component {
         <Grid fluid>
           <Row>
             <Col xs={12}>
-              {!R.isEmpty(this.state.message) && <Message message={this.state.message} handleClose={this.closeMessagePanel} />}
+              {
+               this.showMessage()
+                && <Message message={this.state.message} handleClose={this.closeMessagePanel} />
+              }
             </Col>
           </Row>
           <Row>
@@ -194,5 +214,14 @@ class DashboardPage extends Component {
     );
   }
 }
+DashboardPage.contextTypes = {
+  router: PropTypes.shape().isRequired,
+};
+DashboardPage.propTypes = {
+  location: PropTypes.shape(),
+};
 
+DashboardPage.defaultProps = {
+  location: {},
+};
 export default DashboardPage;
