@@ -41,7 +41,7 @@ class DashboardPage extends Component {
 
   componentWillMount() {
     this.setState({
-      message: this.props.location.state.message,
+      message: R.pathOr(['location', 'state', 'message'], this.props, ''),
     });
   }
   getStepContent(stepIndex) {
