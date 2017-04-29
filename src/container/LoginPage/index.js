@@ -5,36 +5,35 @@ import { Grid, Row } from 'react-flexbox-grid';
 import LoginForm from '../../components/LoginForm';
 import dataStore from '../../data/store';
 import content from './content';
+import utilities from '../../utilities';
 
 class LoginPage extends React.Component {
+
   constructor(props) {
     super(props);
     this.loginUser = this.loginUser.bind(this);
   }
 
   async loginUser(credentials) {
-    dataStore.loginUser(credentials);
+    await dataStore.loginUser(credentials);
     const user = await dataStore.getUser();
     const skills = await dataStore.getSkills();
     const educations = await dataStore.getEducations();
     let queryMessage = '';
 
     if (R.any(R.isEmpty, [user, skills, educations])) {
-      // const s = '';
-      // s.concat(R.isEmpty(user) ? ' user Information' );
-      // if (R.isEmpty(user)) {
-      //   s.append('');
-      // }
-      queryMessage = content.emptyUserMessage;
+      const arr = [];
+      let message = '';
+      arr.push(R.isEmpty(user) ? 'your Personal Data' : '');
+      arr.push(R.isEmpty(skills) ? 'your Skills' : '');
+      arr.push(R.isEmpty(educations) ? 'your Educations' : '');
+      message = utilities.formatEnumerationIntoMessage(arr);
+      queryMessage = content.emptyUserMessage.replace('{0}', message);
     } else {
       queryMessage = content.successMessage.replace('{0}', user.firstName);
     }
-    this.context.router.push(
-      {
-        pathname: '/',
-        query: { message: queryMessage },
 
-      });
+    this.context.router.push({ pathame: '/', state: { message: queryMessage } });
   }
 
   render() {
