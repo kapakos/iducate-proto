@@ -136,7 +136,8 @@ class UserForm extends React.Component {
     };
   }
 
-  saveUser() {
+  saveUser(e) {
+    e.preventDefault();
     const user = this.createUser();
     dataStore.newOrUpdateUser(user);
     this.props.userSaved(user);

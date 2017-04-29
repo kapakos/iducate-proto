@@ -49,8 +49,6 @@ class NavigationBar extends React.Component {
 
   async componentWillMount() {
     const selectedTab = this.getSelectedTab();
-    console.log('im in componentWillMount');
-    console.log(selectedTab);
     const isAuth = await authService.isAuthenticated();
     this.setState({
       isAuthenticated: isAuth,
@@ -71,8 +69,6 @@ class NavigationBar extends React.Component {
 
   getSelectedTab() {
     const removeHomeRoute = route => route.name !== 'home';
-    console.log('this.props.location.pathname');
-    console.log(this.props.location);
     return R.findIndex(R.propEq('path', this.props.location.pathname))(R.filter(removeHomeRoute, routes));
   }
 
