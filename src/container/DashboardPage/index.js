@@ -20,7 +20,6 @@ class DashboardPage extends Component {
 
   constructor(props) {
     super(props);
-
     this.steps = 3;
     this.handleNext = this.handleNext.bind(this);
     this.handlePrev = this.handlePrev.bind(this);
