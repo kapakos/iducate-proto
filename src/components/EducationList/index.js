@@ -67,7 +67,7 @@ class EducationList extends React.Component {
         <Col xs={12}>{this.state.educations.sort((a, b) => a.toDate < b.toDate).map(education => (
           <Card style={{ marginBottom: '20px' }} key={education.id}>
             <CardHeader
-              title={this.state.degrees[education.degree].name}
+              title={R.find(R.propEq('id', education.degree), this.state.degrees).name}
               subtitle={education.schoolName}
               actAsExpander
               showExpandableButton

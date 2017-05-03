@@ -138,7 +138,7 @@ describe('Data Provider', () => {
     });
   });
 
-  describe('Save and load education from localstorage', () => {
+  describe('Educations', () => {
     const mockedEducations = [
       {
         id: 0,
@@ -146,8 +146,8 @@ describe('Data Provider', () => {
         degree: 'masters',
         fieldOfStudy: 'IT',
         grade: '70%',
-        fromDate: moment('20011001').toString(),
-        toDate: moment('20080830').toString(),
+        fromDate: '2001-03-16T05:00:00.000Z',
+        toDate: '2008-07-26T04:00:00.000Z',
         description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et jus',
       },
       {
@@ -156,8 +156,8 @@ describe('Data Provider', () => {
         degree: 'highschool',
         fieldOfStudy: '',
         grade: '2,8',
-        fromDate: moment('19991001').toString(),
-        toDate: moment('20010630').toString(),
+        fromDate: '1999-09-01T04:00:00.000Z',
+        toDate: '2001-07-31T04:00:00.000Z',
         description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et jus',
       },
     ];
@@ -192,6 +192,31 @@ describe('Data Provider', () => {
       expect(educations.length).equal(3);
     });
 
+    it('saves the degree ID in the education instance', async () => {
+      const edu = {
+        id: 2,
+        schoolName: 'Fraunhofer Institut',
+        degree: 'phd',
+        fieldOfStudy: 'Virtual Reality Systems',
+        grade: '2,2',
+        fromDate: moment('20101001').toString(),
+        toDate: moment('20120630').toString(),
+        description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et jus',
+      };
+
+      await dataStore.newOrUpdateEducation(edu);
+      const educations = await dataStore.getEducations();
+
+      const isPhd = R.propEq('degree', 'phd');
+      const isMasters = R.propEq('degree', 'masters');
+      const isHishschool = R.propEq('degree', 'highschool');
+      const isOfDegree = R.anyPass([isPhd, isMasters, isHishschool]);
+
+      const shouldBeAnId = e => expect(isOfDegree(e)).to.be.true;
+
+      R.forEach(shouldBeAnId, educations);
+    });
+
     it('updates the an existing education', async () => {
       const updatedEducation = {
         id: 1,
@@ -214,6 +239,17 @@ describe('Data Provider', () => {
       const educations = await dataStore.getEducations();
       expect(educations.length).equals(1);
       expect(educations[0].id).equals(1);
+    });
+
+    it('returns the an emprty object if there are no Education objects', async () => {
+      const latestEducation = await dataStore.getLatestEducation([]);
+      expect(latestEducation).to.be.an('object');
+      expect(latestEducation).to.be.emppty;
+    });
+
+    it('returns the latest Education', async () => {
+      const latestEducation = await dataStore.getLatestEducation(mockedEducations);
+      expect(latestEducation.id).equal(0);
     });
   });
 

@@ -70,6 +70,13 @@ const getEducations = async () => {
   return educations;
 };
 
+const getLatestEducation = async (educations) => {
+  const sortByDate = R.sortBy(R.prop('toDate'));
+  const latest = R.takeLast(1, sortByDate(educations));
+  if (R.isEmpty(latest)) return {};
+  return latest[0];
+};
+
 const newOrUpdateEducation = async (education) => {
   const educationList = await getEducations();
   const educationExists = R.propEq('id', education.id);
@@ -144,6 +151,7 @@ export default {
   saveCourse,
   removeCourse,
   getEducations,
+  getLatestEducation,
   newOrUpdateEducation,
   deleteEducation,
   getSkills,
