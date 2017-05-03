@@ -1,221 +1,127 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Grid, Row, Col } from 'react-flexbox-grid';
-import {
-  Step,
-  Stepper,
-  StepLabel,
-  StepContent,
-} from 'material-ui/Stepper';
-import R from 'ramda';
-import Snackbar from 'material-ui/Snackbar';
-import RaisedButton from 'material-ui/RaisedButton';
+import { Row, Col } from 'react-flexbox-grid';
+import { Card, CardActions, CardHeader, CardText, CardTitle } from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
-import UserForm from '../../components/UserForm';
-import EducationList from '../../components/EducationList';
-import SkillList from '../../components/SkillList';
-import Message from '../../components/Message';
+import R from 'ramda';
+import SidebarLayout from '../SidebarLayout';
+import dataStore from '../../data/store';
+import service from '../../services/data';
 
+const styles = {
+  row: {
+    marginBottom: '20px',
+  },
+};
 class DashboardPage extends Component {
-
   constructor(props) {
     super(props);
-    this.steps = 3;
-    this.handleNext = this.handleNext.bind(this);
-    this.handlePrev = this.handlePrev.bind(this);
-    this.getStepContent = this.getStepContent.bind(this);
-    this.userSaved = this.userSaved.bind(this);
-    this.handleSnackbarClose = this.handleSnackbarClose.bind(this);
-    this.renderStepActions = this.renderStepActions.bind(this);
-    this.closeMessagePanel = this.closeMessagePanel.bind(this);
-    this.showMessage = this.showMessage.bind(this);
-
+    this.goToProfile = this.goToProfile.bind(this);
     this.state = {
-      finished: false,
-      stepIndex: 0,
-      snackBar: { status: false, message: '' },
-      message: '',
-      messageShowed: false,
+      completedCourses: [],
+      recomendedCourses: [],
+      user: {},
     };
   }
-
-  componentWillMount() {
+  async componentWillMount() {
+    const courses = await service.getCourses();
+    const completedCourses = await service.getCompletedCourses(courses);
+    const recomendedCourses = R.take(3, courses);
+    const educations = await dataStore.getEducations();
+    const latestEducation = await dataStore.getLatestEducation(educations);
+    const user = await dataStore.getUser();
     this.setState({
-      message: R.pathOr('', ['location', 'state', 'message'], this.props, ''),
-    });
-  }
-  getStepContent(stepIndex) {
-    switch (stepIndex) {
-      case 0:
-        return (
-          <UserForm userSaved={this.userSaved} />
-        );
-      case 1:
-        return (
-          <div>
-            <EducationList />
-          </div>
-        );
-      case 2:
-        return 'Courses';
-      case 3:
-        return 'Future Courses';
-      default:
-        return 'You\'re a long way from home sonny jim!';
-    }
-  }
-
-  closeMessagePanel(event) {
-    event.preventDefault();
-    this.context.router.setState({
-      message: '',
-    });
-    this.props.location.key = 'tet234t';
-    this.setState({
-      message: '',
+      completedCourses,
+      recomendedCourses,
+      latestEducation,
+      user,
     });
   }
 
-  handleSnackbarClose() {
-    this.setState({
-      snackBar: { status: false, message: '' },
-    });
-  }
-
-  userSaved() {
-    this.setState({
-      snackBar: {
-        status: true,
-        message: 'User Data saved',
-      },
-    });
-  }
-
-  handleNext() {
-    const { stepIndex } = this.state;
-    this.setState({
-      stepIndex: stepIndex + 1,
-      finished: stepIndex >= this.steps,
-    });
-  }
-
-  handlePrev() {
-    const { stepIndex } = this.state;
-    if (stepIndex > 0) {
-      this.setState({ stepIndex: stepIndex - 1 });
-    }
-  }
-
-  showMessage() {
-    if (!R.isEmpty(this.state.message) && !this.state.messageShowed) {
-      return true;
-    }
-    return false;
-  }
-
-  renderStepActions(step) {
-    const { stepIndex } = this.state;
-
-    return (
-      <div style={{ margin: '12px 0' }}>
-        <RaisedButton
-          label={stepIndex === this.steps ? 'Finish' : 'Next'}
-          disableTouchRipple
-          disableFocusRipple
-          primary
-          onTouchTap={this.handleNext}
-          style={{ marginRight: 12 }}
-        />
-        {step > 0 && (
-        <FlatButton
-          label="Back"
-          disabled={stepIndex === 0}
-          disableTouchRipple
-          disableFocusRipple
-          onTouchTap={this.handlePrev}
-        />
-        )}
-      </div>
-    );
+  goToProfile(e) {
+    e.preventDefault();
+    this.context.router.push({ pathname: '/settings' });
   }
 
   render() {
-    const { finished, stepIndex } = this.state;
-    const contentStyle = { margin: '20px 0', textAlign: 'center' };
-
+    const { user, recomendedCourses, completedCourses, latestEducation } = this.state;
     return (
       <div>
-        <Snackbar
-          open={this.state.snackBar.status}
-          message={this.state.snackBar.message}
-          autoHideDuration={3000}
-          onRequestClose={this.handleSnackbarClose}
-        />
-        <Grid fluid>
-          <Row>
-            <Col xs={12}>
-              {
-               this.showMessage()
-                && <Message message={this.state.message} handleClose={this.closeMessagePanel} />
-              }
-            </Col>
-          </Row>
-          <Row>
-            <Col xs={12}>
-              <div style={{ width: '100%', margin: 'auto' }}>
-                <Stepper activeStep={stepIndex} orientation="vertical">
-                  <Step>
-                    <StepLabel>{'Add you\'re personal data'}</StepLabel>
-                    <StepContent>
-                      <UserForm userSaved={this.userSaved} />
-                      {this.renderStepActions(0)}
-                    </StepContent>
-                  </Step>
-                  <Step>
-                    <StepLabel>{'You\'re educational details'}</StepLabel>
-                    <StepContent>
-                      <EducationList />
-                      {this.renderStepActions(1)}
-                    </StepContent>
-                  </Step>
-                  <Step>
-                    <StepLabel>{'What you\'re good at'}</StepLabel>
-                    <StepContent>
-                      <SkillList />
-                      {this.renderStepActions(2)}
-                    </StepContent>
-                  </Step>
-                  <Step>
-                    <StepLabel>{'Online courses you plan to take'}</StepLabel>
-                    <StepContent>
-                      {this.renderStepActions(3)}
-                    </StepContent>
-                  </Step>
-                </Stepper>
-                {finished && (
-                <p style={contentStyle}>
-                  <a
-                    href="#"
-                    onClick={(event) => {
-                      event.preventDefault();
-                      this.setState({ stepIndex: 0, finished: false });
-                    }}
-                  >
-              Click here
-            </a> to reset the example.
-          </p>
-        )}
-              </div>
-            </Col>
-          </Row>
-        </Grid>
+        <Row center="xs" style={styles.row}>
+          <Col xs={12}>
+            <Card>
+              <CardTitle
+                title={`${user.firstName} ${user.lastName}`}
+                subtitle={(!R.isNil(latestEducation) && !R.isEmpty(latestEducation)) ? `${latestEducation.schoolName} - ${service.mapDegreeIdToDegreeName(latestEducation.degree)}` : ''}
+              />
+              <CardActions>
+                <FlatButton label="Edit Profile" onTouchTap={this.goToProfile} />
+              </CardActions>
+            </Card>
+          </Col>
+        </Row>
+        <Row style={styles.row}>
+          <Col xs={12}>
+            <Card>
+              <CardTitle
+                title="Recommended Courses"
+                subtitle="based on your profile we recommend these courses for you"
+              />
+              {recomendedCourses.map(
+                course => <Card key={course.id}>
+                  <CardHeader title={course.title} avatar={course.photoUrl} />
+                  <CardTitle title={course.partnerId} />
+                  <CardText>{course.description}</CardText>
+                </Card>,
+                )
+            }
+            </Card>
+          </Col>
+        </Row>
+        <Row style={styles.row}>
+          <Col xs={12}>
+            <Card>
+              <CardTitle title="Completed Courses" />
+
+              {completedCourses.map(
+                course => <Card key={course.id}>
+                  <CardHeader title={course.title} avatar={course.photoUrl} />
+                  <CardTitle title={course.partnerId} />
+                  <CardText>{course.description}</CardText>
+                </Card>,
+                )
+            }
+            </Card>
+          </Col>
+        </Row>
       </div>
     );
   }
 }
+
+const SidebarContent = () => (
+  <div>
+    <Row style={styles.row}>
+      <Col xs={12}>
+        <Card>
+          <CardHeader title="Some side bar content" subtitle="Data" />
+        </Card>
+      </Col>
+    </Row>
+    <Row style={styles.row}>
+      <Col xs={12}>
+        <Card>
+          <CardHeader title="Another side bar content" subtitle="Data" />
+        </Card>
+      </Col>
+    </Row>
+  </div>
+    );
+
 DashboardPage.contextTypes = {
   router: PropTypes.shape().isRequired,
 };
+
 DashboardPage.propTypes = {
   location: PropTypes.shape(),
 };
@@ -223,4 +129,5 @@ DashboardPage.propTypes = {
 DashboardPage.defaultProps = {
   location: {},
 };
-export default DashboardPage;
+
+export default SidebarLayout(DashboardPage, SidebarContent);

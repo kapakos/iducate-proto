@@ -125,7 +125,7 @@ class EducationForm extends React.Component {
           onChange={onSelectChange}
         >
           {field.options.map((item, index) =>
-            <MenuItem value={index} key={item.id} primaryText={item.name} />)}
+            <MenuItem value={item.id} key={item.id} primaryText={item.name} />)}
         </SelectField>, field.name,
       );
     }
