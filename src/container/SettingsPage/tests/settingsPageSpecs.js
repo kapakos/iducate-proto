@@ -58,7 +58,7 @@ describe('<SettingsPage/>', () => {
 
   describe('create User', () => {
     it('creates and returns a user object', () => {
-      wrapper.setState({ content });
+      // wrapper.setState({ content });
 
       // expect(user).to.have.property('userName');
     });

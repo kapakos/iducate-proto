@@ -99,25 +99,6 @@ class DashboardPage extends Component {
   }
 }
 
-const SidebarContent = () => (
-  <div>
-    <Row style={styles.row}>
-      <Col xs={12}>
-        <Card>
-          <CardHeader title="Some side bar content" subtitle="Data" />
-        </Card>
-      </Col>
-    </Row>
-    <Row style={styles.row}>
-      <Col xs={12}>
-        <Card>
-          <CardHeader title="Another side bar content" subtitle="Data" />
-        </Card>
-      </Col>
-    </Row>
-  </div>
-    );
-
 DashboardPage.contextTypes = {
   router: PropTypes.shape().isRequired,
 };
@@ -130,4 +111,4 @@ DashboardPage.defaultProps = {
   location: {},
 };
 
-export default SidebarLayout(DashboardPage, SidebarContent);
+export default SidebarLayout(DashboardPage);

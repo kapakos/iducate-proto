@@ -23,8 +23,27 @@ const formatEnumerationIntoMessage = (arr) => {
   return cleanArr.join(', ').replace(/\,(?=[^,]*$)/, ' and');
 };
 
+const getErrorText = (name, value, fieldConfig) => R.isEmpty(value) ? R.find(R.propEq('name', name))(fieldConfig).errorText || 'This field is required' : '';
+
+const validateFields = (form, fieldConfig) => {
+  const requiredFields = fieldConfig.filter(field => field.required === true);
+  const isValid = R.none(el => R.isEmpty(form[el.name]))(requiredFields);
+  const errorStates = {};
+  if (!isValid) {
+    const setErrorState = (field) => {
+      errorStates[field.name] = getErrorText(field.name, form[field.name], fieldConfig);
+    };
+    R.forEach(setErrorState, requiredFields);
+  }
+  return {
+    isValid,
+    errorText: errorStates,
+  };
+};
 
 export default {
   isStorageAvailable,
   formatEnumerationIntoMessage,
+  validateFields,
+  getErrorText,
 };

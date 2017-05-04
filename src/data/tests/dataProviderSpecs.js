@@ -321,4 +321,88 @@ describe('Data Provider', () => {
       expect(loginData).to.be.empty;
     });
   });
+
+  describe.only('Positions', () => {
+    const mockPosition = [
+      {
+        id: 0,
+        title: 'Software Engineer',
+        location: 'Munich',
+        fromDate: moment('20140101').toString(),
+        toDate: moment('20150202').toString(),
+        currentPosition: false,
+        description: 'bla bla bla coding bla bla software bla bla computer',
+      },
+    ];
+
+    const newPos = R.dissoc('id', R.merge(
+      R.take(1, mockPosition)[0],
+      { title: 'Senior Software Engineer', currentPosition: false, toDate: '' },
+      ));
+
+    beforeEach(() => {
+      global.window.localStorage.setItem('__positions__iducate__', JSON.stringify(mockPosition));
+    });
+
+    afterEach(() => {
+      global.window.localStorage.clear();
+    });
+
+    it('gets the an empty array when there are no positions in the storage', async () => {
+      const positions = await dataStore.getPositions();
+      expect(positions).to.be.an('array');
+      expect(positions.length).equal(1);
+    });
+
+    it('adds a new position object to the local storage', async () => {
+      await dataStore.newOrUpdatePosition(newPos);
+      const pos = await dataStore.getPositions();
+      expect(pos.length).equal(2);
+      const newPosition = R.find(R.propEq('title', 'Senior Software Engineer'), pos);
+      expect(newPosition).not.be.empty;
+    });
+
+    it('adds an id when none is present', async () => {
+      await dataStore.newOrUpdatePosition(newPos);
+      const positions = await dataStore.getPositions();
+      const isNotEmpty = x => !R.isEmpty(x) && !R.isNil(x);
+      const pred = R.where({
+        id: isNotEmpty,
+      });
+      const test = (x) => { expect(pred(x)).equal(true); };
+      R.forEach(test, positions);
+    });
+
+    it('replaces an existing Position', async () => {
+      global.window.localStorage.setItem('__positions__iducate__', JSON.stringify(R.append(newPos, mockPosition)));
+      let rawPositions = global.window.localStorage.getItem('__positions__iducate__');
+      rawPositions = JSON.parse(rawPositions);
+      expect(rawPositions.length).equal(2);
+
+      const updatedPosition = R.merge(newPos, { title: 'Principal Software Engineer' });
+      await dataStore.newOrUpdatePosition(updatedPosition);
+      const positions = await dataStore.getPositions();
+
+      expect(positions.length).equal(2);
+
+      const retrieveUpdatedPos = R.find(R.propEq('title', 'Principal Software Engineer'), positions);
+      expect(retrieveUpdatedPos).not.be.empty;
+    });
+
+    it('deletes an existing Position', async () => {
+      global.window.localStorage.setItem('__positions__iducate__', JSON.stringify(R.append(R.merge(newPos, { id: 1 }), mockPosition)));
+      let positions = await dataStore.getPositions();
+      expect(positions.length).equal(2);
+      await dataStore.deletePosition(1);
+      positions = await dataStore.getPositions();
+      expect(positions.length).equal(1);
+    });
+
+    it('does not modify the positions if position to delete does not exist', async () => {
+      await dataStore.deletePosition(5);
+      const positions = await dataStore.getPositions();
+      expect(positions.length).equal(1);
+      expect(positions).to.deep.equal(mockPosition);
+    });
+  });
 });

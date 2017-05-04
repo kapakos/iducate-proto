@@ -17,7 +17,7 @@ class EducationList extends React.Component {
     super(props);
     this.updateEducation = this.updateEducation.bind(this);
     this.handleCloseEducationDialog = this.handleCloseEducationDialog.bind(this);
-    this.openSaveEducationDialog = this.openSaveEducationDialog.bind(this);
+    this.openDeleteEducationDialog = this.openDeleteEducationDialog.bind(this);
     this.handleDeleteEducation = this.handleDeleteEducation.bind(this);
     this.openNewEducationFormDialog = this.openNewEducationFormDialog.bind(this);
     this.openEditEducationFormDialog = this.openEditEducationFormDialog.bind(this);
@@ -42,9 +42,8 @@ class EducationList extends React.Component {
     });
   }
 
-
   getEducationHeader() {
-    return (<Row>
+    return (
       <Col xs={12}>
         <Card style={{ boxShadow: 'none' }}>
           <Row middle="xs" between="xs">
@@ -59,40 +58,39 @@ class EducationList extends React.Component {
           </Row>
         </Card>
       </Col>
-    </Row>);
+    );
   }
+
   getEducationList() {
     return (
-      <Row>
-        <Col xs={12}>{this.state.educations.sort((a, b) => a.toDate < b.toDate).map(education => (
-          <Card style={{ marginBottom: '20px' }} key={education.id}>
-            <CardHeader
-              title={R.find(R.propEq('id', education.degree), this.state.degrees).name}
-              subtitle={education.schoolName}
-              actAsExpander
-              showExpandableButton
-            />
-            <CardText style={{ paddingTop: '0', paddingBottom: '0' }}>{moment(education.fromDate).format('LL')} - {moment(education.toDate).format('LL')}</CardText>
-            <CardText expandable>
-              {education.description}
-            </CardText>
-            <CardActions>
-              <div>
-                <FlatButton
-                  primary
-                  onTouchTap={() => { this.openEditEducationFormDialog(education.id); }}
-                  label="Edit"
-                />
-                <FlatButton
-                  primary
-                  onTouchTap={() => { this.openSaveEducationDialog(education.id); }}
-                  label="Delete"
-                />
-              </div>
-            </CardActions>
-          </Card>))}
-        </Col>
-      </Row>
+      <Col xs={12}>{this.state.educations.sort((a, b) => a.toDate < b.toDate).map(education => (
+        <Card style={{ marginBottom: '20px' }} key={education.id}>
+          <CardHeader
+            title={R.find(R.propEq('id', education.degree), this.state.degrees).name}
+            subtitle={education.schoolName}
+            actAsExpander
+            showExpandableButton
+          />
+          <CardText style={{ paddingTop: '0', paddingBottom: '0' }}>{moment(education.fromDate).format('LL')} - {moment(education.toDate).format('LL')}</CardText>
+          <CardText expandable>
+            {education.description}
+          </CardText>
+          <CardActions>
+            <div>
+              <FlatButton
+                primary
+                onTouchTap={() => { this.openEditEducationFormDialog(education.id); }}
+                label="Edit"
+              />
+              <FlatButton
+                primary
+                onTouchTap={() => { this.openDeleteEducationDialog(education.id); }}
+                label="Delete"
+              />
+            </div>
+          </CardActions>
+        </Card>))}
+      </Col>
     );
   }
 
@@ -110,7 +108,7 @@ class EducationList extends React.Component {
     });
   }
 
-  openSaveEducationDialog(id) {
+  openDeleteEducationDialog(id) {
     this.setState({
       deleteEducationDialogOpen: true,
       educationToDelete: id,
