@@ -11,6 +11,7 @@ import DatePicker from 'material-ui/DatePicker';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import config from './fieldConfig';
+import utilities from '../../utilities';
 
 class EducationForm extends React.Component {
   static wrapper(children, key) {
@@ -26,11 +27,11 @@ class EducationForm extends React.Component {
     const defaultEducation = {
       id: '',
       schoolName: '',
-      degree: 0,
+      degree: 'highschool',
       fieldOfStudy: '',
       grade: '',
-      fromDate: moment().day(-30).toString(),
-      toDate: moment().toString(),
+      fromDate: moment().day(-30).toJSON(),
+      toDate: moment().toJSON(),
       description: '',
     };
     this.fieldConfig = config;
@@ -50,12 +51,7 @@ class EducationForm extends React.Component {
     this.fieldCreator = this.fieldCreator.bind(this);
     this.createEducation = this.createEducation.bind(this);
     this.saveEducation = this.saveEducation.bind(this);
-    this.getErrorText = this.getErrorText.bind(this);
     this.validateFields = this.validateFields.bind(this);
-  }
-
-  getErrorText(name, value) {
-    return R.isEmpty(value) ? R.find(R.propEq('name', name))(this.fieldConfig).errorText || 'This field is required' : '';
   }
 
   getFields(field) {
@@ -94,7 +90,7 @@ class EducationForm extends React.Component {
           floatingLabelText={field.label}
           autoOk
           textFieldStyle={style}
-          value={R.isEmpty(initialValue) ? new Date() : new Date(initialValue)}
+          value={R.isEmpty(initialValue) && R.isNil(initialValue) ? new Date() : new Date(initialValue)}
         />, field.name,
       );
     } else if (field.type === 'text') {
@@ -124,7 +120,7 @@ class EducationForm extends React.Component {
           style={R.merge(style, { cursor: 'pointer' })}
           onChange={onSelectChange}
         >
-          {field.options.map((item, index) =>
+          {field.options.map(item =>
             <MenuItem value={item.id} key={item.id} primaryText={item.name} />)}
         </SelectField>, field.name,
       );
@@ -150,7 +146,7 @@ class EducationForm extends React.Component {
     this.setState({
       education: R.merge(education, { [event.target.name]: value }),
       errorText: R.merge(errorText,
-        { [event.target.name]: this.getErrorText(event.target.name, value) }),
+        { [event.target.name]: utilities.getErrorText(event.target.name, value, this.fieldConfig) }),
     });
   }
 
@@ -169,19 +165,24 @@ class EducationForm extends React.Component {
 
   async saveEducation() {
     const education = this.createEducation();
-    if (this.validateFields(education)) {
+    const validation = utilities.validateFields(education, this.fieldConfig);
+    if (validation.isValid) {
       this.props.updateEducation(education);
       this.handleDialogClose();
+      return;
     }
+    this.setState({
+      errorText: validation.errorText,
+    });
   }
 
-  validateFields(form) {
-    const requiredFields = this.fieldConfig.filter(field => field.required === true);
+  validateFields(form, fieldConfig) {
+    const requiredFields = fieldConfig.filter(field => field.required === true);
     const isValid = R.none(el => R.isEmpty(form[el.name]))(requiredFields);
     if (!isValid) {
       const errorStates = {};
       const setErrorState = (field) => {
-        errorStates[field.name] = this.getErrorText(field.name, form[field.name]);
+        errorStates[field.name] = utilities.getErrorText(field.name, form[field.name], fieldConfig);
       };
       R.forEach(setErrorState, requiredFields);
       this.setState({

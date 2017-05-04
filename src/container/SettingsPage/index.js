@@ -13,17 +13,18 @@ import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import UserForm from '../../components/UserForm';
 import EducationList from '../../components/EducationList';
+import PositionList from '../../components/PositionList';
 import SkillList from '../../components/SkillList';
 import Message from '../../components/Message';
+import SidebarLayout from '../SidebarLayout';
 
-class SetttingsPage extends Component {
+class SettingsPage extends Component {
 
   constructor(props) {
     super(props);
-    this.steps = 3;
+    this.steps = 4;
     this.handleNext = this.handleNext.bind(this);
     this.handlePrev = this.handlePrev.bind(this);
-    this.getStepContent = this.getStepContent.bind(this);
     this.userSaved = this.userSaved.bind(this);
     this.handleSnackbarClose = this.handleSnackbarClose.bind(this);
     this.renderStepActions = this.renderStepActions.bind(this);
@@ -43,26 +44,6 @@ class SetttingsPage extends Component {
     this.setState({
       message: R.pathOr('', ['location', 'state', 'message'], this.props, ''),
     });
-  }
-  getStepContent(stepIndex) {
-    switch (stepIndex) {
-      case 0:
-        return (
-          <UserForm userSaved={this.userSaved} />
-        );
-      case 1:
-        return (
-          <div>
-            <EducationList />
-          </div>
-        );
-      case 2:
-        return 'Courses';
-      case 3:
-        return 'Future Courses';
-      default:
-        return 'You\'re a long way from home sonny jim!';
-    }
   }
 
   closeMessagePanel(event) {
@@ -172,23 +153,30 @@ class SetttingsPage extends Component {
                     </StepContent>
                   </Step>
                   <Step>
-                    <StepLabel>{'You\'re educational details'}</StepLabel>
+                    <StepLabel>{'Your educational details'}</StepLabel>
                     <StepContent>
                       <EducationList />
                       {this.renderStepActions(1)}
                     </StepContent>
                   </Step>
                   <Step>
+                    <StepLabel>{'Your Positions'}</StepLabel>
+                    <StepContent>
+                      <PositionList />
+                      {this.renderStepActions(2)}
+                    </StepContent>
+                  </Step>
+                  <Step>
                     <StepLabel>{'What you\'re good at'}</StepLabel>
                     <StepContent>
                       <SkillList />
-                      {this.renderStepActions(2)}
+                      {this.renderStepActions(3)}
                     </StepContent>
                   </Step>
                   <Step>
                     <StepLabel>{'Online courses you plan to take'}</StepLabel>
                     <StepContent>
-                      {this.renderStepActions(3)}
+                      {this.renderStepActions(4)}
                     </StepContent>
                   </Step>
                 </Stepper>
@@ -213,14 +201,14 @@ class SetttingsPage extends Component {
     );
   }
 }
-SetttingsPage.contextTypes = {
+SettingsPage.contextTypes = {
   router: PropTypes.shape().isRequired,
 };
-SetttingsPage.propTypes = {
+SettingsPage.propTypes = {
   location: PropTypes.shape(),
 };
 
-SetttingsPage.defaultProps = {
+SettingsPage.defaultProps = {
   location: {},
 };
-export default SetttingsPage;
+export default SidebarLayout(SettingsPage);

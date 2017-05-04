@@ -1,12 +1,14 @@
 import R from 'ramda';
 import CryptoJS from 'crypto-js';
 import utilities from '../utilities';
+import uuidV4 from 'uuid/v4';
 
 const coursesStorageKey = '__courses__iducate__';
 const userStorageKey = '__user__iducate__';
 const educationsStorageKey = '__educations__iducate__';
 const skillsStorageKey = '__skills__iducate__';
 const loginStorageKey = '__login__iducate__';
+const positionsStorageKey = '__positions__iducate__';
 
 const secretKey = 'very Secret Key';
 
@@ -143,6 +145,32 @@ const deleteLoginData = async () => {
   storage.removeItem(loginStorageKey);
 };
 
+const getPositions = async () => getData(positionsStorageKey);
+
+const newOrUpdatePosition = async (position) => {
+  const positions = await getPositions();
+  const foundPos = R.find(R.propEq('id', position.id), positions);
+  let newList = [];
+  if (R.isNil(foundPos)) {
+    const positionWithId = R.assoc('id', uuidV4(), position);
+    newList = R.append(positionWithId, positions);
+    replaceData(positionsStorageKey, newList);
+  } else {
+    newList = R.reject(pos => pos.id === foundPos.id, positions);
+    const updatedPos = R.merge(foundPos, position);
+    newList = R.append(updatedPos, newList);
+    replaceData(positionsStorageKey, newList);
+  }
+  return newList;
+};
+
+const deletePosition = async (id) => {
+  const positions = await getPositions();
+  const newPositionList = R.reject(pos => pos.id === id, positions);
+  replaceData(positionsStorageKey, newPositionList);
+  return newPositionList;
+};
+
 export default {
   getUser,
   newOrUpdateUser,
@@ -160,4 +188,7 @@ export default {
   loginUser,
   getLoginData,
   deleteLoginData,
+  getPositions,
+  newOrUpdatePosition,
+  deletePosition,
 };
