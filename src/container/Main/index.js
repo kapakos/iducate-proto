@@ -14,7 +14,7 @@ class Main extends Component {
     return (
       <div>
         <NavigationBar {...this.props} />
-        <div style={{ width: '1190px', margin: '0 auto' }}>
+        <div className="content">
           {this.props.children}
         </div>
       </div>

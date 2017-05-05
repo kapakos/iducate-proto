@@ -13,7 +13,9 @@
     height: 100%;
 }
 
-:global(.content) {
-	width : 1200px;
-	margin: 0 auto;
+@media only screen and (min-width: 75em) {
+  :global(.content) {
+    width: 76rem;
+    margin: 0 auto;
+  }
 }
