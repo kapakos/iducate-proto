@@ -53,18 +53,35 @@ const deleteUser = async () => {
   storage.removeItem(userStorageKey);
 };
 
-const saveCourse = async (id) => {
+const handleCourse = async (id, prop) => {
   const courseList = await getCourses();
-  if (courseList.indexOf(id) === -1) {
-    courseList.push(id);
-    replaceData(coursesStorageKey, courseList);
+  const existingCourse = R.find(R.propEq('id', id))(courseList);
+  const resetedCourse = { taken: false, toTake: false };
+  if (R.isNil(existingCourse)) {
+    const newCourse = R.merge(resetedCourse, { id, [prop]: true });
+    courseList.push(newCourse);
+  } else {
+    const newList = R.map(
+      course => (course.id === id
+        ? R.mergeAll([course, resetedCourse, { [prop]: true }])
+        : course), courseList);
+    replaceData(coursesStorageKey, newList);
+    return newList;
   }
+  replaceData(coursesStorageKey, courseList);
+  return courseList;
 };
 
-const removeCourse = async (id) => {
+const courseTaken = async id => handleCourse(id, 'taken');
+
+const courseToTake = async id => handleCourse(id, 'toTake');
+
+const resetCourse = async (id) => {
   const courseList = await getCourses();
-  const newCourseList = R.without([id], courseList);
+  const courseToRemove = course => course.id === id;
+  const newCourseList = R.reject(courseToRemove, courseList);
   replaceData(coursesStorageKey, newCourseList);
+  return newCourseList;
 };
 
 const getEducations = async () => {
@@ -89,10 +106,10 @@ const newOrUpdateEducation = async (education) => {
     return educationList;
   }
 
-  const newEducationList = R.map(
-      edu => edu.id === existingEducation.id
-      ? R.merge(existingEducation, education)
-      : edu, educationList);
+  const updateEducation = (edu =>
+    edu.id === existingEducation.id ? R.merge(existingEducation, education) : edu);
+
+  const newEducationList = R.map(updateEducation, educationList);
   replaceData(educationsStorageKey, newEducationList);
   return newEducationList;
 };
@@ -176,8 +193,9 @@ export default {
   newOrUpdateUser,
   deleteUser,
   getCourses,
-  saveCourse,
-  removeCourse,
+  courseTaken,
+  resetCourse,
+  courseToTake,
   getEducations,
   getLatestEducation,
   newOrUpdateEducation,

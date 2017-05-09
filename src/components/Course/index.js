@@ -1,36 +1,60 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import R from 'ramda';
 import { Card, CardActions, CardHeader, CardText, CardTitle } from 'material-ui/Card';
-import RaisedButton from 'material-ui/RaisedButton';
-import ActionCheckCircle from 'material-ui/svg-icons/action/check-circle';
+import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton';
+import FlatButton from 'material-ui/FlatButton';
 import content from './content';
 
-const Course = ({ course, saveHandler, removeHandler, savedCourses }) => {
-  const saved = savedCourses.indexOf(course.id) > -1;
-  return (
-    <Card style={{ marginBottom: '20px' }}>
-      <CardHeader
-        title={course.title}
-        avatar={course.photoUrl}
-      />
-      <CardTitle title={course.partnerId} />
-      <CardText>
-        {course.description}
-      </CardText>
-      <CardActions>
-        <div>
-          <RaisedButton
-            style={{ width: '200px', margin: 12 }}
-            primary
-            onTouchTap={() => (saved ? removeHandler(course.id) : saveHandler(course.id))}
-            label={saved ? content.REMOVE_COURSE : content.SAVE_COURSE}
-            icon={saved && <ActionCheckCircle />}
-          />
-        </div>
-      </CardActions>
-    </Card>
-  );
+const styles = {
+  block: {
+    maxWidth: 250,
+  },
+  radioButton: {
+    marginBottom: 16,
+  },
 };
+
+const Course = ({ course, savedCourse, courseActions, resetCourse }) => (
+  <Card style={{ marginBottom: '20px' }}>
+    <CardHeader
+      title={course.title}
+      avatar={course.photoUrl}
+    />
+    <CardTitle title={course.partnerId} />
+    <CardText>
+      {course.description}
+    </CardText>
+    <CardActions>
+      <div>
+        <RadioButtonGroup
+          name="course-actions"
+          onChange={courseActions.bind(this, course.id)}
+          value={course.id}
+          valueSelected={savedCourse}
+        >
+          <RadioButton
+            value="courseTaken"
+            label={content.COURSE_TAKEN}
+            style={styles.radioButton}
+          />
+          <RadioButton
+            value="courseToTake"
+            label={content.COURSE_TO_TAKE}
+            style={styles.radioButton}
+          />
+        </RadioButtonGroup>
+        <FlatButton
+          primary
+          disabled={R.isEmpty(savedCourse)}
+          label="Reset"
+          onTouchTap={() => resetCourse(course.id)}
+          name="reset"
+        />
+      </div>
+    </CardActions>
+  </Card>
+  );
 
 export const CourseType = {
   title: PropTypes.string,
@@ -43,16 +67,16 @@ export const CourseType = {
 
 Course.defaultProps = {
   course: {},
-  saveHandler: () => {},
-  removeHandler: () => {},
-  savedCourses: [],
+  courseActions: () => {},
+  resetCourse: () => {},
+  savedCourse: '',
 };
 
 Course.propTypes = {
   course: PropTypes.shape(CourseType),
-  saveHandler: PropTypes.func.isRequired,
-  removeHandler: PropTypes.func.isRequired,
-  savedCourses: PropTypes.arrayOf(React.PropTypes.string),
+  courseActions: PropTypes.func.isRequired,
+  resetCourse: PropTypes.func.isRequired,
+  savedCourse: PropTypes.string,
 };
 
 export default Course;

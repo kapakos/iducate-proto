@@ -3,6 +3,9 @@ import PropTypes from 'prop-types';
 import { Row, Col } from 'react-flexbox-grid';
 import { Card, CardActions, CardHeader, CardText, CardTitle } from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
+import IconButton from 'material-ui/IconButton';
+import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
+import Badge from 'material-ui/Badge';
 import R from 'ramda';
 import SidebarLayout from '../SidebarLayout';
 import dataStore from '../../data/store';
@@ -18,20 +21,23 @@ class DashboardPage extends Component {
     super(props);
     this.goToProfile = this.goToProfile.bind(this);
     this.state = {
-      completedCourses: [],
+      takenCourses: [],
+
       recomendedCourses: [],
       user: {},
     };
   }
   async componentWillMount() {
     const courses = await service.getCourses();
-    const completedCourses = await service.getCompletedCourses(courses);
+    const takenCourses = await service.getTakenCourses(courses);
+    const toTakeCourses = await service.getToTakeCourses(courses);
     const recomendedCourses = R.take(3, courses);
     const educations = await dataStore.getEducations();
     const latestEducation = await dataStore.getLatestEducation(educations);
     const user = await dataStore.getUser();
     this.setState({
-      completedCourses,
+      takenCourses,
+      toTakeCourses,
       recomendedCourses,
       latestEducation,
       user,
@@ -44,7 +50,9 @@ class DashboardPage extends Component {
   }
 
   render() {
-    const { user, recomendedCourses, completedCourses, latestEducation } = this.state;
+    const { user, recomendedCourses, takenCourses, toTakeCourses, latestEducation } = this.state;
+    const takenCount = R.isNil(takenCourses) ? 0 : takenCourses.length;
+    const toTakeCount = R.isNil(toTakeCourses) ? 0 : toTakeCourses.length;
     return (
       <div>
         <Row center="xs" style={styles.row}>
@@ -54,6 +62,20 @@ class DashboardPage extends Component {
                 title={`${user.firstName} ${user.lastName}`}
                 subtitle={(!R.isNil(latestEducation) && !R.isEmpty(latestEducation)) ? `${latestEducation.schoolName} - ${service.mapDegreeIdToDegreeName(latestEducation.degree)}` : ''}
               />
+              <CardText>
+                <Badge
+                  badgeContent={takenCount}
+                  primary
+                >
+                Completed Courses
+                </Badge>
+                <Badge
+                  badgeContent={toTakeCount}
+                  secondary
+                >
+                Planned Courses
+                </Badge>
+              </CardText>
               <CardActions>
                 <FlatButton label="Edit Profile" onTouchTap={this.goToProfile} />
               </CardActions>
@@ -63,11 +85,9 @@ class DashboardPage extends Component {
         <Row style={styles.row}>
           <Col xs={12}>
             <Card>
-              <CardTitle
-                title="Recommended Courses"
-                subtitle="based on your profile we recommend these courses for you"
-              />
-              {recomendedCourses.map(
+              <CardTitle title="Completed Courses" />
+
+              {takenCourses && takenCourses.map(
                 course => <Card key={course.id}>
                   <CardHeader title={course.title} avatar={course.photoUrl} />
                   <CardTitle title={course.partnerId} />
@@ -81,9 +101,27 @@ class DashboardPage extends Component {
         <Row style={styles.row}>
           <Col xs={12}>
             <Card>
-              <CardTitle title="Completed Courses" />
+              <CardTitle title="Planned Courses" />
 
-              {completedCourses.map(
+              {toTakeCourses && toTakeCourses.map(
+                course => <Card key={course.id}>
+                  <CardHeader title={course.title} avatar={course.photoUrl} />
+                  <CardTitle title={course.partnerId} />
+                  <CardText>{course.description}</CardText>
+                </Card>,
+                )
+            }
+            </Card>
+          </Col>
+        </Row>
+        <Row style={styles.row}>
+          <Col xs={12}>
+            <Card>
+              <CardTitle
+                title="Recommended Courses"
+                subtitle="based on your profile we recommend these courses for you"
+              />
+              {recomendedCourses.map(
                 course => <Card key={course.id}>
                   <CardHeader title={course.title} avatar={course.photoUrl} />
                   <CardTitle title={course.partnerId} />

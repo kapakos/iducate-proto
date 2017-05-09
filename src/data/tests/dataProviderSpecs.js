@@ -72,40 +72,108 @@ describe('Data Provider', () => {
       });
     });
 
-    it('returns data from local storage', () => {
-      global.window.localStorage.setItem('__courses__iducate__', JSON.stringify([mockedCourseList[0]]));
-      const courses = dataStore.getCourses();
-      return courses.then((courseList) => {
-        expect(courseList[0].id).equal('66666');
-      });
+    it('returns data from local storage', async () => {
+      global.window.localStorage.setItem('__courses__iducate__', JSON.stringify([{ id: '66666', taken: true, toTake: false }]));
+      const courses = await dataStore.getCourses();
+      expect(courses[0].id).equal('66666');
+      expect(courses[0].taken).to.be.true;
+      expect(courses[0].toTake).to.be.false;
     });
 
-    it('saves data to the localStorage', async () => {
-      await dataStore.saveCourse(mockedCourseList[0].id);
+    it('saves saved course to the localStorage', async () => {
+      await dataStore.courseTaken(mockedCourseList[0].id);
       const courseList = await dataStore.getCourses();
-      expect(courseList[0]).equal('66666');
+      expect(courseList[0].id).equal('66666');
+      expect(courseList[0].taken).to.be.true;
     });
 
     it('appends data to the localStorage', async () => {
-      await dataStore.saveCourse(mockedCourseList[0].id);
-      await dataStore.saveCourse(mockedCourseList[1].id);
-      await dataStore.saveCourse(mockedCourseList[2].id);
+      await dataStore.courseTaken(mockedCourseList[0].id);
+      await dataStore.courseTaken(mockedCourseList[1].id);
+      await dataStore.courseTaken(mockedCourseList[2].id);
       const courses = await dataStore.getCourses();
       expect(courses.length).equal(3);
-      expect(courses[0]).equal('66666');
-      expect(courses[1]).equal('ud1016');
-      expect(courses[2]).equal('ud1014');
-      await dataStore.removeCourse('ud1016');
-      const newCourses = await dataStore.getCourses();
-      expect(newCourses.length).equal(2);
+      expect(courses[0].id).equal('66666');
+      expect(courses[1].id).equal('ud1016');
+      expect(courses[2].id).equal('ud1014');
     });
 
     it('only adds an id to the storage if it does not already exist', async () => {
-      await dataStore.saveCourse(mockedCourseList[0].id);
-      await dataStore.saveCourse(mockedCourseList[0].id);
+      await dataStore.courseTaken(mockedCourseList[0].id);
+      await dataStore.courseTaken(mockedCourseList[0].id);
       const courses = await dataStore.getCourses();
+      console.log(courses);
       expect(courses.length).equal(1);
-      expect(courses[0]).equal('66666');
+      expect(courses[0].id).equal('66666');
+      expect(courses[0].taken).to.be.true;
+    });
+
+    it('returns the courses when action is being processed', async () => {
+      let courses = await dataStore.courseTaken('66666');
+      expect(courses.length).equal(1);
+      courses = await dataStore.courseToTake('77777');
+      expect(courses.length).equal(2);
+    });
+  });
+
+  describe('Reserve Courses', () => {
+    it('reserves a course and saves it in the localstorage', async () => {
+      await dataStore.courseToTake(mockedCourseList[0].id);
+      const courses = await dataStore.getCourses();
+      expect(courses[0].id).equal('66666');
+      expect(courses[0].toTake).to.be.true;
+    });
+
+    it('sets taken to false when course is being reserved', async () => {
+      await dataStore.courseTaken('66666');
+      let courses = await dataStore.getCourses();
+      expect(courses[0].id).equal('66666');
+      expect(courses[0].taken).to.be.true;
+      await dataStore.courseToTake('66666');
+      courses = await dataStore.getCourses();
+      expect(courses[0].id).equal('66666');
+      expect(courses[0].toTake).to.be.true;
+      expect(courses[0].taken).to.be.false;
+    });
+
+    it('sets reservation to false when course is being set on taken', async () => {
+      await dataStore.courseToTake('66666');
+      let courses = await dataStore.getCourses();
+      expect(courses[0].id).equal('66666');
+      expect(courses[0].toTake).to.be.true;
+      await dataStore.courseTaken('66666');
+      courses = await dataStore.getCourses();
+      expect(courses[0].id).equal('66666');
+      expect(courses[0].taken).to.be.true;
+      expect(courses[0].toTake).to.be.false;
+    });
+  });
+
+  describe('Remove courses', () => {
+    it('removes reserved course when resetted', async () => {
+      let courses = await dataStore.courseToTake(mockedCourseList[0].id);
+      expect(courses.length).equal(1);
+      courses = await dataStore.resetCourse('66666');
+      expect(courses.length).equal(0);
+    });
+
+    it('returns the remaining saved courses, when course is resetted', async () => {
+      await dataStore.courseToTake('66666');
+      let courses = await dataStore.courseToTake('77777');
+      expect(courses.length).equal(2);
+      courses = await dataStore.resetCourse('66666');
+      expect(courses.length).equal(1);
+      expect(courses[0].id).equal('77777');
+    });
+
+    it('leaves courses unchanged if wrong id is passed', async () => {
+      await dataStore.courseToTake('66666');
+      let courses = await dataStore.courseToTake('77777');
+      expect(courses.length).equal(2);
+      courses = await dataStore.resetCourse('bla bla');
+      expect(courses.length).equal(2);
+      expect(courses[0].id).equal('66666');
+      expect(courses[1].id).equal('77777');
     });
   });
 
@@ -322,7 +390,7 @@ describe('Data Provider', () => {
     });
   });
 
-  describe.only('Positions', () => {
+  describe('Positions', () => {
     const mockPosition = [
       {
         id: 0,
