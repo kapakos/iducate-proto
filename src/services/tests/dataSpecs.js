@@ -19,14 +19,19 @@ describe('Data provider', () => {
     localStorage.itemInsertionCallback = null;
   });
 
-  const courseIds = ['1', '2', '3'];
-  const courses = [{ id: '1' }, { id: '2' }, { id: '3' }, { id: '4' }, { id: '5' }, { id: '6' }, { id: '7' }];
+  const coursesSavedInStorage = [
+    { id: '1', taken: true, toTake: false },
+    { id: '2', taken: false, toTake: true },
+    { id: '3', taken: true, toTake: false },
+  ];
+
+  const allCoursesFromApi = [{ id: '1' }, { id: '2' }, { id: '3' }, { id: '4' }, { id: '5' }, { id: '6' }, { id: '7' }];
   it('returns an array', async () => {
     sandbox.stub(dataStore, 'getCourses').returns(
-      Promise.resolve(courseIds),
+      Promise.resolve(coursesSavedInStorage),
       );
 
-    const completedCourses = await dataService.getCompletedCourses(courses);
+    const completedCourses = await dataService.getTakenCourses(allCoursesFromApi);
     expect(completedCourses).to.be.an('array');
   });
 
@@ -35,18 +40,27 @@ describe('Data provider', () => {
       Promise.resolve(null),
       );
 
-    const completedCourses = await dataService.getCompletedCourses(courses);
+    const completedCourses = await dataService.getTakenCourses(allCoursesFromApi);
     expect(completedCourses).to.be.an('array');
     expect(completedCourses.length).equal(0);
   });
 
   it('returns only completed courses', async () => {
     sandbox.stub(dataStore, 'getCourses').returns(
-      Promise.resolve(courseIds),
+      Promise.resolve(coursesSavedInStorage),
       );
 
-    const completedCourses = await dataService.getCompletedCourses(courses);
-    expect(completedCourses.length).equal(3);
+    const completedCourses = await dataService.getTakenCourses(allCoursesFromApi);
+    expect(completedCourses.length).equal(2);
+    expect(completedCourses).deep.equal([{ id: '1' }, { id: '3' }]);
+  });
+
+  it('returns only courses to take', async () => {
+    sandbox.stub(dataStore, 'getCourses').returns(
+      Promise.resolve(coursesSavedInStorage),
+      );
+    const coursesToTake = await dataService.getToTakeCourses(allCoursesFromApi);
+    expect(coursesToTake.length).equal(1);
   });
 
   describe('Degree Mapping', () => {

@@ -14,7 +14,9 @@ class Main extends Component {
     return (
       <div>
         <NavigationBar {...this.props} />
-        {this.props.children}
+        <div className="content">
+          {this.props.children}
+        </div>
       </div>
     );
   }

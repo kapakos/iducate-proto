@@ -10,11 +10,21 @@ const getProviders = () => providers;
 const getUsers = () => users;
 const getDegrees = () => degrees;
 
-const getCompletedCourses = async (allCourses) => {
-  const courseIds = await dataStore.getCourses();
-  if (R.isNil(courseIds) || R.isEmpty(courseIds)) return [];
-  return R.filter(course => courseIds.indexOf(course.id) > -1, allCourses);
+const getCoursesByFilter = async (allCourses, filterProp) => {
+  const savedCourses = await dataStore.getCourses();
+  if (R.isNil(savedCourses) || R.isEmpty(savedCourses)) return [];
+
+  const filterTakenCourses = R.filter(c => c[filterProp] === true, savedCourses);
+  const pickIdFromsTakenCourses = R.map(R.pick(['id']), filterTakenCourses);
+
+  return R.filter(
+   R.compose(R.flip(R.contains)(pickIdFromsTakenCourses), R.pick(['id'])),
+         allCourses);
 };
+
+const getTakenCourses = async allCourses => getCoursesByFilter(allCourses, 'taken');
+
+const getToTakeCourses = async allCourses => getCoursesByFilter(allCourses, 'toTake');
 
 const mapDegreeIdToDegreeName = (id) => {
   const degreeList = getDegrees();
@@ -26,6 +36,7 @@ export default {
   getProviders,
   getUsers,
   getDegrees,
-  getCompletedCourses,
+  getTakenCourses,
+  getToTakeCourses,
   mapDegreeIdToDegreeName,
 };
