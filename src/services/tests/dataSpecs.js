@@ -63,6 +63,14 @@ describe('Data provider', () => {
     expect(coursesToTake.length).equal(1);
   });
 
+  it('returns all courses that are saved', async () => {
+    sandbox.stub(dataStore, 'getCourses').returns(
+      Promise.resolve(coursesSavedInStorage),
+      );
+    const allCourses = await dataService.getAllMarkedCourses(allCoursesFromApi);
+    expect(allCourses.length).equal(3);
+  });
+
   describe('Degree Mapping', () => {
     it('maps the degree id to the degree name', () => {
       const degreeName = dataService.mapDegreeIdToDegreeName('masters');
