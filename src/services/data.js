@@ -1,12 +1,13 @@
 import R from 'ramda';
 import courses from './courses';
-import providers from './providers';
+import enums from './enums';
 import users from './users';
 import degrees from './degrees';
 import dataStore from '../data/store';
 
 const getCourses = () => courses;
-const getProviders = () => providers;
+const getProviders = () => enums.providers;
+const getCourseStates = () => enums.courseStates;
 const getUsers = () => users;
 const getDegrees = () => degrees;
 
@@ -14,17 +15,24 @@ const getCoursesByFilter = async (allCourses, filterProp) => {
   const savedCourses = await dataStore.getCourses();
   if (R.isNil(savedCourses) || R.isEmpty(savedCourses)) return [];
 
-  const filterTakenCourses = R.filter(c => c[filterProp] === true, savedCourses);
-  const pickIdFromsTakenCourses = R.map(R.pick(['id']), filterTakenCourses);
+  const filterSavedCourses = filterProp === 'all'
+    ? savedCourses
+    : R.filter(c => c[filterProp] === true, savedCourses);
+
+
+  const pickIdFromsSavedCourses = R.map(R.pick(['id']), filterSavedCourses);
+
 
   return R.filter(
-   R.compose(R.flip(R.contains)(pickIdFromsTakenCourses), R.pick(['id'])),
+   R.compose(R.flip(R.contains)(pickIdFromsSavedCourses), R.pick(['id'])),
          allCourses);
 };
 
 const getTakenCourses = async allCourses => getCoursesByFilter(allCourses, 'taken');
 
 const getToTakeCourses = async allCourses => getCoursesByFilter(allCourses, 'toTake');
+
+const getAllMarkedCourses = async allCourses => getCoursesByFilter(allCourses, 'all');
 
 const mapDegreeIdToDegreeName = (id) => {
   const degreeList = getDegrees();
@@ -34,9 +42,11 @@ const mapDegreeIdToDegreeName = (id) => {
 export default {
   getCourses,
   getProviders,
+  getCourseStates,
   getUsers,
   getDegrees,
   getTakenCourses,
   getToTakeCourses,
+  getAllMarkedCourses,
   mapDegreeIdToDegreeName,
 };
