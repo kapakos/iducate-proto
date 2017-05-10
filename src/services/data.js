@@ -24,8 +24,7 @@ const getCoursesByFilter = async (allCourses, filterProp) => {
 
 
   return R.filter(
-   R.compose(R.flip(R.contains)(pickIdFromsSavedCourses), R.pick(['id'])),
-         allCourses);
+   R.compose(R.flip(R.contains)(pickIdFromsSavedCourses), R.pick(['id'])), allCourses);
 };
 
 const getTakenCourses = async allCourses => getCoursesByFilter(allCourses, 'taken');
