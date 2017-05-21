@@ -11,7 +11,7 @@ import authService from '../../services/authService';
 
 const styles = {
   navigation: {
-    width: '125px',
+    width: '250px',
   },
   tab: {
     deactivated: {
@@ -52,7 +52,7 @@ class NavigationBar extends React.Component {
     const isAuth = await authService.isAuthenticated();
     this.setState({
       isAuthenticated: isAuth,
-      selectedTab: this.getSelectedTab(),
+      selectedTab,
     });
   }
 
@@ -73,6 +73,7 @@ class NavigationBar extends React.Component {
   }
 
   handleActiveTap(tab) {
+    console.log(tab.props.index);
     this.context.router.push(`${tab.props['data-route']}`);
     this.setState({ selectedTab: tab.props.index });
   }
@@ -101,6 +102,7 @@ class NavigationBar extends React.Component {
           <Col xs={12}>
             <AppBar
               style={{ boxShadow: 'none', cursor: 'pointer' }}
+              titleStyle={{ fontWeight: 100 }}
               showMenuIconButton={false}
               title="Iducate Protoype"
               onTitleTouchTap={this.handleTitleTap}
@@ -113,18 +115,19 @@ class NavigationBar extends React.Component {
         </Row>
         <Row>
           <Col xs={12}>
-            <Tabs style={styles.navigation} inkBarStyle={{ display: this.isMainNavigationActive() ? 'block' : 'none' }} initialSelectedIndex={selectedTab}>
+            <Tabs style={styles.navigation} initialSelectedIndex={selectedTab} inkBarStyle={{ display: 'none' }}>
+              {isAuthenticated && <Tab
+                label="Categories"
+                style={{ color: NavigationBar.getDecativatedTabColorStyle(selectedTab, 0) }}
+                data-route="/categories"
+                onActive={this.handleActiveTap}
+              />}
               {isAuthenticated && <Tab
                 label="Courses"
-                style={{ color: NavigationBar.getDecativatedTabColorStyle(selectedTab, 0) }}
-                data-route="/courses" onActive={this.handleActiveTap}
+                style={{ color: NavigationBar.getDecativatedTabColorStyle(selectedTab, 1) }}
+                data-route="/courses"
+                onActive={this.handleActiveTap}
               />}
-              {/* <Tab
-              label="Dashboard"
-              style={{ color: NavigationBar.getDecativatedTabColorStyle(selectedTab, 1) }}
-              data-route="/dashboard"
-              onActive={handleActiveTab}
-            />*/}
             </Tabs>
           </Col>
         </Row>

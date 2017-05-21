@@ -1,52 +1,55 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import R from 'ramda';
 import { Grid, Row, Col } from 'react-flexbox-grid';
-import SelectField from 'material-ui/SelectField';
 import Checkbox from 'material-ui/Checkbox';
 import AutoComplete from 'material-ui/AutoComplete';
-import MenuItem from 'material-ui/MenuItem';
-import CourseList from '../../components/CourseList';
+import CircularProgress from 'material-ui/CircularProgress';
+import { withRouter } from 'react-router';
 import dataService from '../../services/data';
+import SidebarLayout from '../SidebarLayout';
+import Filter from '../../components/Filter';
+import CourseList from '../../components/CourseList';
 
-class CoursesPage extends Component {
-
-  static getMenuItem(text, value) {
-    return <MenuItem value={value} key={value} primaryText={text} />;
-  }
+class CoursePage extends Component {
 
   constructor(props) {
     super(props);
 
-    this.courses = dataService.getCourses();
-    this.providers = dataService.getProviders();
-    this.courseStates = dataService.getCourseStates();
-
-    this.handleProviderChange = this.handleProviderChange.bind(this);
     this.handleCourseStateChange = this.handleCourseStateChange.bind(this);
-    this.getCoursesByPartner = this.getCoursesByPartner.bind(this);
-    this.getCoursesByCourseState = this.getCoursesByCourseState.bind(this);
     this.filterCourses = this.filterCourses.bind(this);
-    this.isFilterSelected = this.isFilterSelected.bind(this);
-    this.handleChecked = this.handleChecked.bind(this);
-
+    this.setFilter = this.setFilter.bind(this);
     this.state = {
-      providerIndex: 0,
       courseStateIndex: 0,
-      filteredCourses: this.courses,
+      filteredCourses: [],
       savedCourses: [],
+      courses: [],
     };
   }
 
-  getCoursesByPartner(partnerId) {
+  async componentWillMount() {
+    const udacityData = await dataService.getUdacityData();
+    this.categories = R.map(cat => cat.name, udacityData.tracks);
+    this.categories.push('Other');
+    this.providers = dataService.getProviders();
+    this.courseStates = dataService.getCourseStates();
+
+    this.setState({
+      courses: udacityData.courses,
+      filteredCourses: udacityData.courses,
+    });
+  }
+
+ /* getCoursesByPartner(partnerId) {
     const coursesToFilter = this.isFilterSelected('courseStateIndex') ? this.state.filteredCourses : this.courses;
 
     return partnerId === 'all'
         ? coursesToFilter
         : coursesToFilter.filter(
       course => course.partnerId === partnerId);
-  }
+  }*/
 
-  async getCoursesByCourseState(courseState) {
+ /* async getCoursesByCourseState(courseState) {
     const coursesToFilter = this.isFilterSelected('providerIndex') ? this.state.filteredCourses : this.courses;
     if (courseState === 'all') {
       return dataService.getAllMarkedCourses(coursesToFilter);
@@ -55,9 +58,9 @@ class CoursesPage extends Component {
     ? await dataService.getTakenCourses(coursesToFilter)
     : await dataService.getToTakeCourses(coursesToFilter);
     return courses;
-  }
+  }*/
 
-  async handleChecked(event, checked) {
+ /* async handleChecked(event, checked) {
     let courses = [];
     if (checked) {
       courses = await this.getCoursesByCourseState(event.target.name);
@@ -65,11 +68,7 @@ class CoursesPage extends Component {
       courses = await this.getCoursesByCourseState('all');
     }
     this.setState({ filteredCourses: courses });
-  }
-
-  isFilterSelected(filter) {
-    return this.state[filter] !== 0;
-  }
+  }*/
 
   filterCourses(searchText) {
     const partnerId = this.providers[this.state.providerIndex].id;
@@ -83,13 +82,13 @@ class CoursesPage extends Component {
     }
   }
 
-  handleProviderChange(event, index, value) {
+/*  handleProviderChange(event, index, value) {
     if (value != null) {
       this.setState({ providerIndex: value });
       const id = this.providers[value].id;
       this.setState({ filteredCourses: this.getCoursesByPartner(id) });
     }
-  }
+  }*/
 
   async handleCourseStateChange(event, index, value) {
     if (value != null) {
@@ -100,56 +99,48 @@ class CoursesPage extends Component {
     }
   }
 
+  setFilter(filter) {
+    const { selectedProvider, selectedCategories } = filter;
+    this.filterCoursesByCategories(selectedCategories);
+  }
+
+  filterCoursesByCategories(categories) {
+    const { courses } = this.state;
+    const intersects = R.intersection(categories);
+
+    let filteredCourseList =
+      R.isEmpty(categories) ? courses : R.filter(c => !R.isEmpty(intersects(c.tracks)), courses);
+    if (R.contains('Other', categories)) {
+      filteredCourseList =
+        R.concat(R.filter(c => R.isEmpty(c.tracks), courses), filteredCourseList);
+    }
+
+    this.setState({
+      filteredCourses: filteredCourseList,
+    });
+  }
+
   render() {
     const styles = {
       checkbox: {
         marginTop: 26,
       },
     };
+
+    // const childrenWithProps = React.cloneElement(this.props.children, this.props);
+
     return (
       <Grid fluid>
         <Row>
-          <Col xs={12} md={4}>
-            <SelectField
-              floatingLabelText="Select by Provider"
-              value={this.state.providerIndex}
-              onChange={this.handleProviderChange}
-              id="providers"
-            >
-              {this.providers.map((partner, index) =>
-                CoursesPage.getMenuItem(partner.name, index))}
-            </SelectField>
-          </Col>
-          <Col xs={12} md={2}>
-            {/*  <SelectField
-              floatingLabelText="Select by Course State"
-              value={this.state.courseStateIndex}
-              onChange={this.handleCourseStateChange}
-              id="courseStates"
-            >
-              {this.courseStates.map((states, index) =>
-                CoursesPage.getMenuItem(states.name, index))}
-            </SelectField>*/}
-            <Checkbox
-              name="taken"
-              label="Completed"
-              style={styles.checkbox}
-              onCheck={this.handleChecked}
-            />
-
-          </Col>
-          <Col xs={12} md={2}>
-            <Checkbox
-              name="toTake"
-              label="Planned"
-              style={styles.checkbox}
-              onCheck={this.handleChecked}
+          <Col xs={12} sm={3}>
+            <Filter
+              categories={this.categories}
+              courseStates={this.courseStates}
+              providers={this.providers}
+              updateFilter={this.setFilter}
             />
           </Col>
-        </Row>
-        {this.state.filteredCourses &&
-        <Row>
-          <Col xs={12} sm={6}>
+          <Col xs={12} sm={9}>
             <AutoComplete
               style={{ marginBottom: '20px' }}
               floatingLabelText="Search for course"
@@ -159,12 +150,29 @@ class CoursesPage extends Component {
               onUpdateInput={this.filterCourses}
               fullWidth
             />
+
+            {
+              this.state.filteredCourses
+              ? <div>
+                <span>Courses found: ({this.state.filteredCourses.length})</span>
+                <CourseList courses={this.state.filteredCourses} />
+              </div>
+              : <CircularProgress style={{ marginTop: 150 }} />
+            }
+
           </Col>
-          <CourseList courses={this.state.filteredCourses} />
-        </Row>}
+        </Row>
       </Grid>
     );
   }
 }
 
-export default CoursesPage;
+CoursePage.propTypes = {
+  location: PropTypes.shape(),
+};
+
+CoursePage.defaultProps = {
+  location: {},
+};
+
+export default withRouter(CoursePage);

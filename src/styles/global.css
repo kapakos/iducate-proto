@@ -13,6 +13,17 @@
     height: 100%;
 }
 
+:global(a) {
+    text-decoration: none
+}
+:global(li) {
+   list-style: none
+}
+
+:global(a:hover) {
+   text-decoration: underline
+}
+
 @media only screen and (min-width: 75em) {
   :global(.content) {
     width: 76rem;

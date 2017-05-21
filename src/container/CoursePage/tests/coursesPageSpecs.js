@@ -3,7 +3,7 @@ import R from 'ramda';
 import { shallow } from 'enzyme';
 import { expect } from 'chai';
 import dataService from '../../../services/data';
-import CoursesPage from '../';
+import CoursePage from '../';
 import dataStore from '../../../data/store';
 
 const coursesList = dataService.getCourses();
@@ -79,12 +79,12 @@ const state = {
 
 };
 
-describe('<CoursesPage />', () => {
+describe('<CoursePage />', () => {
   let wrapper = null;
   let sandbox;
   beforeEach(() => {
     sandbox = sinon.sandbox.create();
-    wrapper = shallow(<CoursesPage />);
+    wrapper = shallow(<CoursePage />);
   });
 
   afterEach(() => {

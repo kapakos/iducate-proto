@@ -12,6 +12,7 @@ const styles = {
   },
   radioButton: {
     marginBottom: 16,
+    fontSize: '14px',
   },
 };
 
@@ -19,18 +20,21 @@ const Course = ({ course, savedCourse, courseActions, resetCourse }) => (
   <Card style={{ marginBottom: '20px' }}>
     <CardHeader
       title={course.title}
-      avatar={course.photoUrl}
+      subtitle={course.subtitle}
+      avatar={course.image}
     />
-    <CardTitle title={course.partnerId} />
+    {/* <CardTitle title={course.partnerId} />*/}
     <CardText>
-      {course.description}
+      {course.tracks.length > 0 ? <p>Categories: {course.tracks}</p> : ''}
+      {course.summary}
+
     </CardText>
     <CardActions>
       <div>
         <RadioButtonGroup
           name="course-actions"
-          onChange={courseActions.bind(this, course.id)}
-          value={course.id}
+          onChange={courseActions.bind(this, course.key)}
+          value={course.key}
           valueSelected={savedCourse}
         >
           <RadioButton
@@ -48,7 +52,7 @@ const Course = ({ course, savedCourse, courseActions, resetCourse }) => (
           primary
           disabled={R.isEmpty(savedCourse)}
           label="Reset"
-          onTouchTap={() => resetCourse(course.id)}
+          onTouchTap={() => resetCourse(course.key)}
           name="reset"
         />
       </div>

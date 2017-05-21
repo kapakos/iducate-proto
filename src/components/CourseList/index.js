@@ -2,6 +2,7 @@ import React from 'react';
 import R from 'ramda';
 import Course, { CourseType } from '../Course';
 import dataStore from '../../data/store';
+import dataService from '../../services/data';
 
 import './courseList.css';
 
@@ -9,7 +10,7 @@ class CourseList extends React.Component {
   static getCard(course, activeButton, courseActions, resetCourse) {
     return (
       <Course
-        key={course.id}
+        key={course.key}
         course={course}
         savedCourse={activeButton}
         courseActions={courseActions}
@@ -23,17 +24,33 @@ class CourseList extends React.Component {
     this.state = {
       savedCourses: [],
     };
+
     this.handleCourseAction = this.handleCourseAction.bind(this);
     this.courseActions = this.courseActions.bind(this);
     this.resetCourse = this.resetCourse.bind(this);
+    this.getCoursesByPartner = this.getCoursesByPartner.bind(this);
+
+    this.applyFilter = this.applyFilter.bind(this);
   }
 
   async componentWillMount() {
-    const courses = await dataStore.getCourses();
+    const savedCourses = await dataStore.getCourses();
     this.setState({
-      savedCourses: courses,
+      savedCourses,
     });
   }
+
+  getCoursesByPartner(partnerId) {
+    return partnerId === 'all'
+        ? this.courses
+        : this.courses.filter(
+      course => course.partnerId === partnerId);
+  }
+
+  applyFilter() {
+
+  }
+
 
   courseActions(id, event, value) {
     this.handleCourseAction(id, value);
@@ -50,13 +67,13 @@ class CourseList extends React.Component {
 
   render() {
     const filterSavedCourses = R.flip(R.find)(this.state.savedCourses);
-    const pickByTrueValue = (val, key) => val === true;
-
+    const pickByTrueValue = val => val === true;
     return (
       <div>
         {
           this.props.courses && this.props.courses.map((course) => {
-            let activeButton = R.keys(R.pickBy(pickByTrueValue)(filterSavedCourses(c => c.id === course.id)))[0];
+            let activeButton =
+              R.keys(R.pickBy(pickByTrueValue)(filterSavedCourses(c => c.id === course.key)))[0];
             activeButton = !R.isNil(activeButton)
             ? activeButton === 'taken'
               ? 'courseTaken'

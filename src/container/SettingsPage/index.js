@@ -205,6 +205,7 @@ class SettingsPage extends Component {
 SettingsPage.contextTypes = {
   router: PropTypes.shape().isRequired,
 };
+
 SettingsPage.propTypes = {
   location: PropTypes.shape(),
 };

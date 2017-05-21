@@ -38,6 +38,30 @@ const mapDegreeIdToDegreeName = (id) => {
   return R.find(R.propEq('id', id), degreeList).name;
 };
 
+const getCourseraCourses = () => {
+
+};
+
+const udadcityData = {
+  courses: [],
+  degrees: [],
+  tracks: [],
+};
+
+const getUdacityData = () => {
+  if (R.isEmpty(udadcityData.courses)) {
+    return fetch('https://www.udacity.com/public-api/v0/courses')
+      .then(response => response.json())
+      .then((data) => {
+        udadcityData.courses = R.uniqBy(c => c.key, data.courses);
+        udadcityData.degrees = data.degrees;
+        udadcityData.tracks = data.tracks;
+        return udadcityData;
+      });
+  }
+  return Promise.resolve(udadcityData);
+};
+
 export default {
   getCourses,
   getProviders,
@@ -48,4 +72,6 @@ export default {
   getToTakeCourses,
   getAllMarkedCourses,
   mapDegreeIdToDegreeName,
+  getUdacityData,
+  getCourseraCourses,
 };
