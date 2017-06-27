@@ -9,6 +9,7 @@ const educationsStorageKey = '__educations__iducate__';
 const skillsStorageKey = '__skills__iducate__';
 const loginStorageKey = '__login__iducate__';
 const positionsStorageKey = '__positions__iducate__';
+const surveyStorageKey = '__survey__iducate__';
 
 const secretKey = 'very Secret Key';
 
@@ -188,6 +189,21 @@ const deletePosition = async (id) => {
   return newPositionList;
 };
 
+const getSurveyAnswers = async () => {
+  const answers = await getData(surveyStorageKey);
+  if (R.isEmpty(answers)) {
+    return {};
+  }
+
+  return answers;
+};
+
+const saveSurveyAnswers = async (answers) => {
+  const data = await getSurveyAnswers();
+  const newAnswers = R.merge(data, answers);
+  replaceData(surveyStorageKey, newAnswers);
+};
+
 export default {
   getUser,
   newOrUpdateUser,
@@ -209,4 +225,6 @@ export default {
   getPositions,
   newOrUpdatePosition,
   deletePosition,
+  getSurveyAnswers,
+  saveSurveyAnswers,
 };

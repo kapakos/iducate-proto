@@ -473,4 +473,65 @@ describe('Data Provider', () => {
       expect(positions).to.deep.equal(mockPosition);
     });
   });
+
+  describe.only('Survey Answers', () => {
+    const mockedAnswer = {
+      goals: [],
+    };
+
+    it('survey answers are an object', async () => {
+      const result = await dataStore.getSurveyAnswers();
+      expect(result).to.be.an('object');
+    });
+
+    it('get the survey answers saved in the data store', async () => {
+      global.window.localStorage.setItem('__survey__iducate__', JSON.stringify(mockedAnswer));
+      const result = await dataStore.getSurveyAnswers();
+      expect(R.keys(result).length).to.be.above(0);
+      expect(R.keys(result)[0]).equal('goals');
+    });
+
+    it('answers are in an array', async () => {
+      global.window.localStorage.setItem('__survey__iducate__', JSON.stringify(mockedAnswer));
+      const result = await dataStore.getSurveyAnswers();
+      expect(R.keys(result)).to.be.an('array');
+    });
+
+    it('saves the answers in the data store', async () => {
+      await dataStore.saveSurveyAnswers(mockedAnswer);
+      const answers = await dataStore.getSurveyAnswers();
+      expect(R.keys(answers).length).to.be.above(0);
+      expect(R.keys(answers)[0]).equal('goals');
+    });
+
+    it('saves additional answers in the data Store', async () => {
+      await dataStore.saveSurveyAnswers(mockedAnswer);
+      let answers = await dataStore.getSurveyAnswers();
+      expect(R.keys(answers).length).to.equal(1);
+      expect(R.keys(answers)[0]).equal('goals');
+      expect(R.keys(answers.goals)).to.be.empty;
+      await dataStore.saveSurveyAnswers({ timeSpend: [] });
+      answers = await dataStore.getSurveyAnswers();
+      expect(R.keys(answers).length).to.equal(2);
+      expect(R.keys(answers)[1]).equal('timeSpend');
+      expect(R.keys(answers.goals)).to.be.empty;
+    });
+
+    it('replaces existing survey data with new data', async () => {
+      await dataStore.saveSurveyAnswers(mockedAnswer);
+      let answers = await dataStore.getSurveyAnswers();
+      expect(R.keys(answers).length).to.equal(1);
+      expect(R.keys(answers)[0]).equal('goals');
+      expect(R.keys(answers.goals)).to.be.empty;
+      await dataStore.saveSurveyAnswers({ goals: ['1', '2'] });
+      answers = await dataStore.getSurveyAnswers();
+      expect(R.keys(answers).length).to.equal(1);
+      expect(answers.goals).to.deep.equal(['1', '2']);
+      await dataStore.saveSurveyAnswers({ timeSpend: ['1', '3'] });
+      answers = await dataStore.getSurveyAnswers();
+      expect(R.keys(answers).length).to.equal(2);
+      expect(answers.goals).to.deep.equal(['1', '2']);
+      expect(answers.timeSpend).to.deep.equal(['1', '3']);
+    });
+  });
 });

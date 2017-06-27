@@ -48,23 +48,6 @@ const Routes = (
             />,
           )
         }
-        {
-         routes.map(
-          route => (route.type === 'nested') &&
-          <Route
-            path={route.path}
-            key={route.name}
-            component={route.parentComponent}
-          >
-            <Route
-              path={!R.isEmpty(route.propsIds) ? `${route.path}${createUrlProps(route.propsIds)}` : route.path}
-              component={route.component}
-              name={route.name}
-              onEnter={!route.public && requireAuth}
-            />
-          </Route>,
-        )
-        }
       </Route>
     </Router>
   </MuiThemeProvider>

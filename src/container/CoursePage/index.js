@@ -29,6 +29,7 @@ class CoursePage extends Component {
 
   async componentWillMount() {
     const udacityData = await dataService.getUdacityData();
+    const courseraData = await dataService.getCourseraData();
     this.categories = R.map(cat => cat.name, udacityData.tracks);
     this.categories.push('Other');
     this.providers = dataService.getProviders();

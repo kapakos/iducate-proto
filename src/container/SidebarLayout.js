@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Card, CardHeader } from 'material-ui/Card';
 import { Grid, Row, Col } from 'react-flexbox-grid';
-import NavigationBar from '../components/NavigationBar';
 
 const styles = {
   row: {
@@ -34,7 +33,6 @@ class extends React.Component {
   render() {
     return (
       <div>
-        {/* <NavigationBar {...this.props} />*/}
         <div className="content">
           <Grid fluid>
             {options &&

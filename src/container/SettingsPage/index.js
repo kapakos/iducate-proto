@@ -213,4 +213,5 @@ SettingsPage.propTypes = {
 SettingsPage.defaultProps = {
   location: {},
 };
-export default SidebarLayout(SettingsPage);
+
+export default SidebarLayout(SettingsPage, null, null);
