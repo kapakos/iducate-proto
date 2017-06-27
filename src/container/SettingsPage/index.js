@@ -205,6 +205,7 @@ class SettingsPage extends Component {
 SettingsPage.contextTypes = {
   router: PropTypes.shape().isRequired,
 };
+
 SettingsPage.propTypes = {
   location: PropTypes.shape(),
 };
@@ -212,4 +213,5 @@ SettingsPage.propTypes = {
 SettingsPage.defaultProps = {
   location: {},
 };
-export default SidebarLayout(SettingsPage);
+
+export default SidebarLayout(SettingsPage, null, null);

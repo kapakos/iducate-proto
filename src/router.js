@@ -6,6 +6,7 @@ import Main from './container/Main';
 import muiTheme from './styles/muiTheme';
 import routes from './routes';
 import DashboardPage from './container/DashboardPage';
+import CoursePage from './container/CoursePage';
 import dataStore from './data/store';
 
 const requireAuth = async (nextState, replace, callback) => {
@@ -16,6 +17,8 @@ const requireAuth = async (nextState, replace, callback) => {
   return callback();
 };
 
+const createUrlProps = propsList => R.reduce(R.concat, '', propsList);
+
 const Routes = (
   <MuiThemeProvider muiTheme={muiTheme}>
     <Router history={hashHistory}>
@@ -23,10 +26,23 @@ const Routes = (
         <IndexRoute component={DashboardPage} onEnter={requireAuth} />
         {
           routes.map(
-            route => (route.type !== 'logo') &&
+            route => (route.type === 'navigation') &&
             <Route
+              name={route.name}
               onEnter={!route.public && requireAuth}
-              path={route.path}
+              path={!R.isEmpty(route.propsIds) ? `${route.path}${createUrlProps(route.propsIds)}` : route.path}
+              key={route.name}
+              component={route.component}
+            />,
+          )
+        }
+        {
+          routes.map(
+            route => (route.type === 'vertical-navigation') &&
+            <Route
+              name={route.name}
+              onEnter={!route.public && requireAuth}
+              path={!R.isEmpty(route.propsIds) ? `${route.path}${createUrlProps(route.propsIds)}` : route.path}
               key={route.name}
               component={route.component}
             />,

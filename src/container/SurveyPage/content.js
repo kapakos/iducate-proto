@@ -1,0 +1,41 @@
+export default {
+  goals: [
+    'I want to deepen my current expertise',
+    'I want to expand my current expertise',
+    'I want to learn something new, related to what I\'m doing now',
+    'I want to learn something new not related to what I am doing now',
+  ],
+  timeSpend: [
+    '< 5 hours/week',
+    '< 10 hours/week',
+    '< 15 hours/week',
+    '< 20 hours/week',
+    'more than 20 hours/week',
+  ],
+  classType: [
+    'online',
+    'inhouse',
+    'private',
+    'public',
+  ],
+  fees: [
+    'Free',
+    '< $500',
+    '< $1000',
+    '< 5000',
+    'doesn\'t matter',
+  ],
+  fields: [
+    'Natural and Physical Sciences',
+    'Information Technology',
+    'Engineering and Related Technologies',
+    'Architecture and Building',
+    'Agriculture, Environmental and Related Studies',
+    'Health',
+    'Education',
+    'Management and Commerce',
+    'Society and Culture',
+    'Creative Arts',
+    'Food, Hospitality and Personal Services',
+  ],
+};

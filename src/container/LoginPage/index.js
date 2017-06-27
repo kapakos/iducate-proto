@@ -29,11 +29,11 @@ class LoginPage extends React.Component {
       arr.push(R.isEmpty(educations) ? 'your Educations' : '');
       message = utilities.formatEnumerationIntoMessage(arr);
       queryMessage = content.emptyUserMessage.replace('{0}', message);
+      this.context.router.push({ pathname: '/survey', state: { message: queryMessage } });
     } else {
       queryMessage = content.successMessage.replace('{0}', user.firstName);
+      this.context.router.push({ pathname: '/', state: { message: queryMessage } });
     }
-
-    this.context.router.push({ pathame: '/', state: { message: queryMessage } });
   }
 
   render() {

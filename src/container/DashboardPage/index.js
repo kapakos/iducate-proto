@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import { Row, Col } from 'react-flexbox-grid';
 import { Card, CardActions, CardHeader, CardText, CardTitle } from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
-import IconButton from 'material-ui/IconButton';
-import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
 import Badge from 'material-ui/Badge';
 import R from 'ramda';
 import SidebarLayout from '../SidebarLayout';
@@ -22,8 +20,9 @@ class DashboardPage extends Component {
     this.goToProfile = this.goToProfile.bind(this);
     this.state = {
       takenCourses: [],
-
+      toTakeCourses: [],
       recomendedCourses: [],
+      latestEducation: {},
       user: {},
     };
   }
