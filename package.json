@@ -1,10 +1,6 @@
 {
   "name": "iducate-proto",
-<<<<<<< HEAD
-  "version": "0.0.30",
-=======
   "version": "0.0.31",
->>>>>>> develop
   "description": "A prototype framework for the iducate platform",
   "repository": {
     "type": "git",
