@@ -12,6 +12,7 @@ class Survey extends Component {
     this.state = {
       openDialog: true,
       selectedOptions: {},
+      error: false,
     };
 
     this.handleNextStep = this.handleNextStep.bind(this);
@@ -20,9 +21,11 @@ class Survey extends Component {
 
   handleNextStep() {
     if (!R.isEmpty(this.state.selectedOptions)) {
+      this.state.error = false;
       this.props.nextStep(this.state.selectedOptions);
     } else {
-      this.props.nextStep({ [this.key]: {} });
+      this.state.error = true;
+      // this.props.nextStep({ [this.key]: {} });
     }
   }
 
@@ -50,25 +53,26 @@ class Survey extends Component {
         marginBottom: 16,
       },
     };
-    this.key = R.keys(this.props.questions)[0];
+    const { content } = this.props;
 
     const actions = [
       <FlatButton
-        label="Submit"
+        label="Next"
         primary
         onTouchTap={this.handleNextStep}
       />,
     ];
-    if (!R.isEmpty(this.props.questions[this.key])) {
+    if (!R.isEmpty(content.answers)) {
       return (
         <div>
           <Dialog
-            title={this.props.title}
+            title={content.title}
             actions={actions}
             modal
             open={this.state.openDialog}
           >
-            {this.props.questions[this.key].map(q => <Checkbox
+            {this.state.error && <div>Please Select min one option</div>}
+            {content.answers.map(q => <Checkbox
               key={q}
               label={q}
               style={styles.checkbox}
@@ -85,14 +89,12 @@ class Survey extends Component {
 
 Survey.propTypes = {
   nextStep: PropTypes.func,
-  questions: PropTypes.shape(),
-  title: PropTypes.string,
+  content: PropTypes.shape(),
 };
 
 Survey.defaultProps = {
   nextStep: () => {},
-  questions: {},
-  title: '',
+  content: {},
 };
 
 export default Survey;

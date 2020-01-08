@@ -27,15 +27,15 @@ class SurveyPage extends Component {
 
   render() {
     if (this.state.step === 0) {
-      return <Survey questions={R.pick(['goals'], this.questions)} nextStep={this.goToNextStep} title="What are your goals?" />;
+      return <Survey content={this.questions.goals} nextStep={this.goToNextStep} />;
     } else if (this.state.step === 1) {
-      return <Survey questions={R.pick(['timeSpend'], this.questions)} nextStep={this.goToNextStep} title="How much time do you want to spend?" />;
+      return <Survey content={this.questions.timeSpend} nextStep={this.goToNextStep} />;
     } else if (this.state.step === 2) {
-      return <Survey questions={R.pick(['classType'], this.questions)} nextStep={this.goToNextStep} title="What type of classes do you prefer?" />;
+      return <Survey content={this.questions.classType} nextStep={this.goToNextStep} />;
     } else if (this.state.step === 3) {
-      return <Survey questions={R.pick(['fees'], this.questions)} nextStep={this.goToNextStep} title="How much are you able to spend on your education?" />;
+      return <Survey content={this.questions.fees} nextStep={this.goToNextStep} />;
     } else if (this.state.step === 4) {
-      return <Survey questions={R.pick(['fields'], this.questions)} nextStep={this.goToNextStep} title="What fields are you interested in?" />;
+      return <Survey content={this.questions.fields} nextStep={this.goToNextStep} />;
     } else if (this.state.step === 5) {
       return <UserForm />;
     }
